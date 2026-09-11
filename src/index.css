@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+@theme {
+  --color-slate-750: #202d42;
+  --color-slate-850: #131d2e;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
