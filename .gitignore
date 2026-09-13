@@ -1,0 +1,22 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# Sensitive runtime data — must never be committed (contains bot tokens & chats)
+# ---------------------------------------------------------------------------
+data/telegram_config.json
+data/database.json
+data/database.json.bak
+data/backups/
+data/store/
+data/media/
+data/videos/
+data/novels/
+data/*.zip
+data/server_translation_jobs.json

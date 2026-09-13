@@ -1,0 +1,6 @@
+{
+  "name": "ردیاب علمی عادات روزانه (Lally 2010)",
+  "description": "سامانه هوشمند و علمی ردیابی عادات روزانه با محاسبه درصد خودکارشدگی (Automaticity Score) بر اساس منحنی نمایی لالی و همکاران (۲۰۱۰) و ذخیره‌سازی در حافظه مرورگر.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

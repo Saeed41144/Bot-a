@@ -1,0 +1,8 @@
+{
+  "botToken": "",
+  "chatId": "",
+  "backupBotToken": "",
+  "backupChatId": "",
+  "autoDailyReport": true,
+  "reportTime": "21:00"
+}
