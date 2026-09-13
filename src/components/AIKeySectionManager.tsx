@@ -42,6 +42,7 @@ import {
   saveStoredAdvancedAIConfig
 } from '../utils/aiKeyManager';
 import { translations, formatNumber } from '../utils/translations';
+import { ResolvedAppearance } from '../utils/themeAppearance';
 
 interface AIKeySectionManagerProps {
   sectionKey: 'analyticsAI' | 'translationAI';
@@ -52,6 +53,7 @@ interface AIKeySectionManagerProps {
   sectionData?: AISettingsSection;
   section?: AISettingsSection;
   language: Language;
+  appearance?: ResolvedAppearance;
   onChange: (updatedSection: AISettingsSection) => void;
 }
 
@@ -64,6 +66,7 @@ export const AIKeySectionManager: React.FC<AIKeySectionManagerProps> = ({
   sectionData,
   section,
   language,
+  appearance,
   onChange,
 }) => {
   const isFa = language === 'fa';
@@ -382,7 +385,10 @@ export const AIKeySectionManager: React.FC<AIKeySectionManagerProps> = ({
     : (detectedProvider ? PROVIDER_METADATA[detectedProvider] : null);
 
   return (
-    <div className="bg-white dark:bg-slate-900/90 rounded-2xl p-5 md:p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm transition-all space-y-5">
+    <div 
+      style={appearance?.cardBoxStyle}
+      className="bg-white dark:bg-slate-900/90 rounded-2xl p-5 md:p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm transition-all space-y-5"
+    >
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800/80">
         <div className="flex items-start gap-3">

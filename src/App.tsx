@@ -3008,7 +3008,7 @@ export default function App() {
   return (
     <div 
       dir={t.dir}
-      className={`min-h-screen antialiased p-4 sm:p-6 md:p-8 flex flex-col justify-between selection:bg-blue-100 dark:selection:bg-blue-900 selection-text-blue-900 dark:selection:text-blue-200 font-sans transition-colors duration-200 ${appearance.sectionCardClass}`}
+      className={`min-h-screen antialiased p-4 sm:p-6 md:p-8 flex flex-col justify-between selection:bg-blue-100 dark:selection:bg-blue-900 selection-text-blue-900 dark:selection:text-blue-200 font-sans transition-colors duration-200 ${appearance.pageBackgroundClass}`}
     >
       <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
         {/* Header with Theme Toggle & Settings */}
@@ -3021,6 +3021,8 @@ export default function App() {
           theme={theme}
           telegramConfig={telegramConfig}
           wallet={wallet}
+          advancedSettings={advancedSettings}
+          appearance={appearance}
           onToggleDarkMode={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
           onOpenAddModal={() => setIsAddModalOpen(true)}
           onOpenScienceModal={() => setIsScienceModalOpen(true)}
@@ -3258,6 +3260,7 @@ export default function App() {
       <ScientificModelModal
         isOpen={isScienceModalOpen}
         language={language}
+        appearance={appearance}
         onClose={() => setIsScienceModalOpen(false)}
       />
 
@@ -3282,6 +3285,7 @@ export default function App() {
         onClose={() => setIsSettingsModalOpen(false)}
         language={language}
         theme={theme}
+        appearance={appearance}
         telegramConfig={telegramConfig}
         advancedSettings={advancedSettings}
         wallet={wallet}
@@ -3310,6 +3314,7 @@ export default function App() {
         tasks={tasks}
         wallet={wallet}
         language={language}
+        appearance={appearance}
         telegramConfig={telegramConfig}
         aiConfig={advancedSettings.aiConfig}
         onUpdateAiConfig={(newAiConfig) => handleUpdateAdvancedSettings({ ...advancedSettings, aiConfig: newAiConfig })}
@@ -3326,6 +3331,7 @@ export default function App() {
         tasks={tasks}
         language={language}
         theme={theme}
+        appearance={appearance}
         telegramConfig={telegramConfig}
         aiConfig={advancedSettings.aiConfig}
         onOpenAIReport={() => setIsAIReportModalOpen(true)}
@@ -3342,6 +3348,7 @@ export default function App() {
         onClose={() => setIsAchievementsModalOpen(false)}
         habits={habits}
         language={language}
+        appearance={appearance}
         tasks={tasks}
         wallet={wallet}
         customNovels={customNovels}
@@ -3352,6 +3359,7 @@ export default function App() {
         isOpen={isBrainLevelsModalOpen}
         onClose={() => setIsBrainLevelsModalOpen(false)}
         language={language}
+        appearance={appearance}
         currentXp={achievementsOverview.totalXp}
         currentLevel={achievementsOverview.currentLevel}
         nextLevel={achievementsOverview.nextLevel}
@@ -3364,6 +3372,7 @@ export default function App() {
         isOpen={isShopModalOpen}
         onClose={() => setIsShopModalOpen(false)}
         language={language}
+        appearance={appearance}
         wallet={wallet}
         customNovels={customNovels}
         customMovies={customMovies}
@@ -3466,6 +3475,7 @@ export default function App() {
         }}
         language={language}
         theme={theme}
+        appearance={appearance}
         habits={habits}
         tasks={tasks}
         initialTargetType={pomodoroTargetType}

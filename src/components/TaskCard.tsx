@@ -32,6 +32,7 @@ import {
 interface TaskCardProps {
   task: Task;
   language: Language;
+  appearance?: any;
   onToggleComplete: (taskId: string) => void;
   onToggleSubtask: (taskId: string, subtaskId: string) => void;
   onAddSubtask: (taskId: string, subtaskTitle: string) => void;
@@ -44,6 +45,7 @@ interface TaskCardProps {
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   language,
+  appearance,
   onToggleComplete,
   onToggleSubtask,
   onAddSubtask,
@@ -125,10 +127,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   return (
     <div
       id={`task-card-${task.id}`}
-      className={`group relative rounded-2xl border transition-all duration-200 shadow-2xs overflow-hidden ${
+      style={appearance?.cardBoxStyle}
+      className={`group relative rounded-2xl border transition-all duration-200 overflow-hidden shrink-0 ${
+        appearance?.shadowClass || 'shadow-2xs'
+      } ${
         task.completed
-          ? 'bg-slate-50/70 dark:bg-slate-900/40 border-slate-200/80 dark:border-slate-800/80 opacity-80'
-          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-xs'
+          ? 'opacity-85 ' + (appearance?.cardBoxClass || 'bg-slate-50/70 dark:bg-slate-900/40 border-slate-200/80 dark:border-slate-800/80')
+          : (appearance?.cardBoxClass || 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700')
       }`}
     >
       {/* Accent Color Strip on Top */}

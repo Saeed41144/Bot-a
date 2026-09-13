@@ -121,7 +121,10 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
       {/* 🌟 HABITS MANAGEMENT & CONTROL BOX */}
       <div 
         id="habits-management-box"
-        className={`rounded-3xl p-5 sm:p-6 shadow-2xs flex flex-col gap-5 transition-all overflow-hidden ${appearance?.sectionCardClass || "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"} ${appearance?.maxHeightClass || "h-[500px]"}`}
+        style={appearance?.cardBoxStyle}
+        className={`rounded-3xl p-5 sm:p-6 border shadow-2xs flex flex-col gap-5 transition-all overflow-hidden ${
+          appearance?.cardBoxClass || 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+        } ${appearance?.shadowClass || 'shadow-2xs'}`}
       >
         {/* Banner Header: Title & Action Buttons */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pb-5 border-b border-slate-100 dark:border-slate-800/80">
@@ -300,7 +303,7 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
       {/* Habits Content Container with Smart Scrollbar */}
       {sortedHabits.length > 0 ? (
         <div className="relative">
-          <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 pl-1 pb-4">
+          <div className={`${appearance?.maxHeightClass || 'max-h-[640px] sm:max-h-[720px]'} overflow-y-auto custom-scrollbar pr-1 pl-1 pb-4`}>
             {isCompactView ? (
               /* Compact Dense View */
               <div className="flex flex-col gap-2">
@@ -311,10 +314,11 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
                   return (
                     <div
                       key={habit.id}
-                      className={`flex items-center justify-between p-3 rounded-2xl border transition-all gap-3 ${
+                      style={appearance?.cardBoxStyle}
+                      className={`flex items-center justify-between p-3 rounded-2xl border transition-all gap-3 shrink-0 ${
                         isDoneToday
                           ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40'
-                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-orange-300'
+                          : (appearance?.cardBoxClass || 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800') + ' hover:border-orange-300'
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -407,6 +411,7 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
                     key={habit.id}
                     habit={habit}
                     language={language}
+                    appearance={appearance}
                     onToggleDay={onToggleDay}
                     onRequestDelete={onRequestDelete}
                     onOpenInfo={onOpenScienceModal}

@@ -151,7 +151,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
   return (
     <div className="flex flex-col gap-6">
       {/* Daily Progress Focus Header Box */}
-      <div className={`relative overflow-hidden rounded-3xl shadow-2xl p-5 sm:p-7 text-slate-100 flex flex-col gap-5 ${appearance?.sectionCardClass || "bg-slate-900 border border-slate-800"} ${appearance?.maxHeightClass || "h-[500px]"}`}>
+      <div className={`relative overflow-hidden rounded-3xl shadow-2xl p-5 sm:p-7 text-slate-100 flex flex-col gap-5 ${appearance?.headerBoxClass || "bg-slate-900 border border-slate-800"}`}>
         {/* Subtle Ambient Glow Effects */}
         <div className="absolute -top-24 -left-24 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
@@ -322,7 +322,12 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
       {/* Two-Column Grid: Habits on Left, Tasks on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Left Column: Today's Habits */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col gap-4">
+        <div 
+          style={appearance?.cardBoxStyle}
+          className={`rounded-3xl p-5 border flex flex-col gap-4 ${
+            appearance?.cardBoxClass || 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+          } ${appearance?.shadowClass || 'shadow-2xs'}`}
+        >
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center">
@@ -378,13 +383,16 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
           {/* Habits List Container with Smart Max-Height & Custom Scrollbar */}
           {pendingHabitsList.length > 0 ? (
             <div className="relative">
-              <div className="max-h-[400px] overflow-y-auto custom-scrollbar flex flex-col gap-2.5 pr-1 pl-1 pb-2">
+              <div className={`${appearance?.maxHeightClass || 'max-h-[460px] sm:max-h-[520px]'} overflow-y-auto custom-scrollbar flex flex-col gap-3 pr-1 pl-1 pb-2`}>
                 {pendingHabitsList.map((habit) => {
                   if (isHabitsCompact) {
                     return (
                       <div
                         key={habit.id}
-                        className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-750 hover:border-orange-300 transition-all gap-2"
+                        style={appearance?.cardBoxStyle}
+                        className={`flex items-center justify-between p-2.5 rounded-2xl border hover:border-orange-300 transition-all gap-2 shrink-0 ${
+                          appearance?.cardBoxClass || 'bg-slate-50 dark:bg-slate-800/80 border-slate-200/80 dark:border-slate-750'
+                        }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <button
@@ -436,6 +444,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
                       key={habit.id}
                       habit={habit}
                       language={language}
+                      appearance={appearance}
                       onToggleDay={onToggleHabit}
                       onRequestDelete={onDeleteHabit}
                       onOpenPomodoro={onOpenPomodoroForHabit}
@@ -479,7 +488,12 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
         </div>
 
         {/* Right Column: Today's Tasks */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col gap-4">
+        <div 
+          style={appearance?.cardBoxStyle}
+          className={`rounded-3xl p-5 border flex flex-col gap-4 ${
+            appearance?.cardBoxClass || 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+          } ${appearance?.shadowClass || 'shadow-2xs'}`}
+        >
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
@@ -535,13 +549,16 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
           {/* Tasks List Container with Smart Max-Height & Custom Scrollbar */}
           {pendingTasksList.length > 0 ? (
             <div className="relative">
-              <div className="max-h-[400px] overflow-y-auto custom-scrollbar flex flex-col gap-2.5 pr-1 pl-1 pb-2">
+              <div className={`${appearance?.maxHeightClass || 'max-h-[460px] sm:max-h-[520px]'} overflow-y-auto custom-scrollbar flex flex-col gap-3 pr-1 pl-1 pb-2`}>
                 {pendingTasksList.map((task) => {
                   if (isTasksCompact) {
                     return (
                       <div
                         key={task.id}
-                        className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-750 hover:border-blue-300 transition-all gap-2"
+                        style={appearance?.cardBoxStyle}
+                        className={`flex items-center justify-between p-2.5 rounded-2xl border hover:border-blue-300 transition-all gap-2 shrink-0 ${
+                          appearance?.cardBoxClass || 'bg-slate-50 dark:bg-slate-800/80 border-slate-200/80 dark:border-slate-750'
+                        }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <button
@@ -595,6 +612,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
                       key={task.id}
                       task={task}
                       language={language}
+                      appearance={appearance}
                       onToggleComplete={onToggleTask}
                       onToggleSubtask={onToggleSubtask}
                       onAddSubtask={onAddSubtask}

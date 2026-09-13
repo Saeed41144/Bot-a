@@ -47,6 +47,7 @@ import {
 import { getDefaultMovies, getDefaultPlaylists, countTotalEpisodes, countTotalSeasons, getMediaTypeMeta, getMovieTotalCalculatedPrice } from '../utils/movieData';
 import { CoinReportModal } from './CoinReportModal';
 import { BackgroundTranslationProgressBanner } from './BackgroundTranslationProgressBanner';
+import { ResolvedAppearance } from '../utils/themeAppearance';
 
 interface ShopModalProps {
   isOpen: boolean;
@@ -62,6 +63,7 @@ interface ShopModalProps {
   deletedPlaylistIds?: string[];
   deletedNovelIds?: string[];
   language: Language;
+  appearance?: ResolvedAppearance;
   onUnlockNovel: (novel: WebNovel) => boolean;
   onUnlockMovie?: (movie: ShopMovie) => boolean;
   onOpenReader: (novel: WebNovel) => void;
@@ -92,6 +94,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
   deletedPlaylistIds = [],
   deletedNovelIds = [],
   language,
+  appearance,
   onUnlockNovel,
   onUnlockMovie,
   onOpenReader,
@@ -490,6 +493,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
       onClick={onClose}
     >
       <div
+        style={appearance?.modalBoxStyle}
         className="w-full max-w-5xl bg-slate-950 text-white rounded-3xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
@@ -2034,6 +2038,7 @@ export const ShopModal: React.FC<ShopModalProps> = ({
         onClose={() => setIsReportOpen(false)}
         wallet={wallet}
         language={language}
+        appearance={appearance}
       />
     </div>
   );

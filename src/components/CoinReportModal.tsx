@@ -22,12 +22,14 @@ import {
 import { UserRewardWallet, Language, RewardTransaction } from '../types';
 import { formatNumber } from '../utils/translations';
 import { formatDateStringToPersianShort, toPersianDigits } from '../utils/persianDate';
+import { ResolvedAppearance } from '../utils/themeAppearance';
 
 interface CoinReportModalProps {
   isOpen: boolean;
   onClose: () => void;
   wallet: UserRewardWallet;
   language: Language;
+  appearance?: ResolvedAppearance;
 }
 
 type FilterType = 'all' | 'earn' | 'spend';
@@ -37,6 +39,7 @@ export const CoinReportModal: React.FC<CoinReportModalProps> = ({
   onClose,
   wallet,
   language,
+  appearance,
 }) => {
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -163,6 +166,7 @@ export const CoinReportModal: React.FC<CoinReportModalProps> = ({
       onClick={onClose}
     >
       <div
+        style={appearance?.modalBoxStyle}
         className="w-full max-w-2xl bg-slate-900 text-white rounded-3xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >

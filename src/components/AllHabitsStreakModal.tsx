@@ -15,12 +15,14 @@ import { Habit, Language } from '../types';
 import { calculateAllHabitsStreak } from '../utils/habitMath';
 import { formatNumber } from '../utils/translations';
 import { getTodayString } from '../utils/persianDate';
+import { ResolvedAppearance } from '../utils/themeAppearance';
 
 interface AllHabitsStreakModalProps {
   isOpen: boolean;
   onClose: () => void;
   habits: Habit[];
   language: Language;
+  appearance?: ResolvedAppearance;
   onOpenStatsModal?: () => void;
 }
 
@@ -29,6 +31,7 @@ export const AllHabitsStreakModal: React.FC<AllHabitsStreakModalProps> = ({
   onClose,
   habits,
   language,
+  appearance,
   onOpenStatsModal,
 }) => {
   if (!isOpen) return null;
@@ -45,6 +48,7 @@ export const AllHabitsStreakModal: React.FC<AllHabitsStreakModalProps> = ({
     >
       <div 
         dir={isFa || isAr ? 'rtl' : 'ltr'}
+        style={appearance?.modalBoxStyle}
         className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col relative max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >

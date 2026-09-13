@@ -59,6 +59,7 @@ import {
 } from '../utils/pomodoroStorage';
 import { getArchivedHabits, getArchivedTasks } from '../utils/archivedEntitiesStorage';
 import { CompletionHistorySection, CompletionHistoryItem } from './CompletionHistorySection';
+import { ResolvedAppearance } from '../utils/themeAppearance';
 
 interface StatsModalProps {
   isOpen: boolean;
@@ -69,6 +70,7 @@ interface StatsModalProps {
   theme: ThemeMode;
   telegramConfig: TelegramConfig;
   aiConfig?: AIConfigurationSettings;
+  appearance?: ResolvedAppearance;
   onOpenAIReport: () => void;
   onOpenPomodoroModal?: (targetType?: PomodoroTargetType, targetId?: string) => void;
 }
@@ -87,6 +89,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   theme,
   telegramConfig,
   aiConfig,
+  appearance,
   onOpenAIReport,
   onOpenPomodoroModal,
 }) => {
@@ -480,10 +483,14 @@ export const StatsModal: React.FC<StatsModalProps> = ({
     >
       <div
         dir={t.dir}
+        style={appearance?.modalBoxStyle}
         className="bg-slate-900 dark:bg-slate-950 text-slate-100 rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-800 overflow-hidden"
       >
-        {/* Modern Modal Header - Solid Dark Theme */}
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900 dark:bg-slate-950">
+        {/* Modern Modal Header */}
+        <div 
+          style={appearance?.modalBoxStyle ? { backgroundColor: 'transparent' } : undefined}
+          className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900 dark:bg-slate-950"
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-900/30">
               <BarChart3 className="w-5 h-5" />
@@ -536,8 +543,11 @@ export const StatsModal: React.FC<StatsModalProps> = ({
           </div>
         </div>
 
-        {/* 4 Tabs Switcher - Pure Dark Design */}
-        <div className="px-5 pt-3 pb-0 border-b border-slate-800 bg-slate-900 dark:bg-slate-950 flex items-center gap-1.5 sm:gap-3 overflow-x-auto">
+        {/* 4 Tabs Switcher */}
+        <div 
+          style={appearance?.modalBoxStyle ? { backgroundColor: 'transparent' } : undefined}
+          className="px-5 pt-3 pb-0 border-b border-slate-800 bg-slate-900 dark:bg-slate-950 flex items-center gap-1.5 sm:gap-3 overflow-x-auto"
+        >
           {/* Tab 1: Overview */}
           <button
             id="tab-stats-overview"

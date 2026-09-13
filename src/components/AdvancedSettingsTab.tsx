@@ -82,12 +82,14 @@ import {
 import { AIKeySectionManager } from './AIKeySectionManager';
 import { createCompleteBackupPayload, downloadBackupFile, copyBackupToClipboard } from '../utils/backupHelper';
 import { DiscoveredMediaConfigModal } from './DiscoveredMediaConfigModal';
+import { resolveAppearance, ResolvedAppearance } from '../utils/themeAppearance';
 
 interface AdvancedSettingsTabProps {
   language: Language;
   theme?: ThemeMode;
   telegramConfig?: TelegramConfig;
   advancedSettings: AdvancedSettings;
+  appearance?: ResolvedAppearance;
   habits: Habit[];
   wallet?: RewardWallet;
   customNovels?: WebNovel[];
@@ -104,7 +106,7 @@ interface AdvancedSettingsTabProps {
 
 export const AdvancedSettingsTab: React.FC<AdvancedSettingsTabProps> = ({
   language,
-  theme = 'light',
+  theme = 'light' as ThemeMode,
   telegramConfig = {
     botToken: '',
     chatId: '',
@@ -112,6 +114,7 @@ export const AdvancedSettingsTab: React.FC<AdvancedSettingsTabProps> = ({
     reportTime: '21:00',
   },
   advancedSettings,
+  appearance: propAppearance,
   habits,
   wallet,
   customNovels,
@@ -126,6 +129,7 @@ export const AdvancedSettingsTab: React.FC<AdvancedSettingsTabProps> = ({
   onRefreshFromDatabase,
 }) => {
   const t = translations[language];
+  const appearance = propAppearance || resolveAppearance(theme, advancedSettings?.uiAppearance);
   const [storageStats, setStorageStats] = useState(() => getLocalStorageStats());
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizationSuccess, setOptimizationSuccess] = useState(false);
@@ -1138,6 +1142,7 @@ export const AdvancedSettingsTab: React.FC<AdvancedSettingsTabProps> = ({
             <AIKeySectionManager
               language={language}
               sectionKey="analyticsAI"
+              appearance={appearance}
               title={language === 'fa' ? 'بخش ۱: کلیدهای هوش مصنوعی گزارش و تحلیل آمار' : language === 'ar' ? 'القسم 1: مفاتيح تحليل وتقارير العادات' : 'Section 1: Habit Analytics & Automated Coaching AI'}
               subtitle={language === 'fa' ? 'گزارش‌دهی و تحلیل عادات' : language === 'ar' ? 'التحليلات والتقارير' : 'Analytics & Insights'}
               icon={<BarChart3 className="w-5 h-5" />}
@@ -1155,6 +1160,7 @@ export const AdvancedSettingsTab: React.FC<AdvancedSettingsTabProps> = ({
             <AIKeySectionManager
               language={language}
               sectionKey="translationAI"
+              appearance={appearance}
               title={language === 'fa' ? 'بخش ۲: کلیدهای هوش مصنوعی ترجمه رمان و استخراج HTML' : language === 'ar' ? 'القسم 2: مفاتيح ترجمة الروايات واستخراج HTML' : 'Section 2: Novel Translation & Web Content Extraction AI'}
               subtitle={language === 'fa' ? 'ترجمه و استخراج محتوا' : language === 'ar' ? 'الترجمة واستخراج المحتوى' : 'Translation & Web Extraction'}
               icon={<Languages className="w-5 h-5" />}
@@ -1275,7 +1281,155 @@ export const AdvancedSettingsTab: React.FC<AdvancedSettingsTabProps> = ({
           </div>
         </div>
 
-        {/* 3. Shadow Elevation & Height Controls */}
+        {/* 3. Custom Box Background Colors */}
+        <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+              <Palette className="w-3.5 h-3.5 text-purple-500" />
+              <span>{language === 'fa' ? 'رنگ پس‌زمینه اختصاصی باکس‌ها (کارت‌های تسک و عادت)' : 'Custom Box & Card Background Color'}</span>
+            </div>
+            {(advancedSettings.uiAppearance?.customBoxBgColor || advancedSettings.uiAppearance?.customBoxBgColorDark || advancedSettings.uiAppearance?.customBoxBgColorLight) && (
+              <button
+                type="button"
+                onClick={() => {
+                  onChange({
+                    ...advancedSettings,
+                    uiAppearance: {
+                      ...advancedSettings.uiAppearance,
+                      customBoxBgColor: undefined,
+                      customBoxBgColorDark: undefined,
+                      customBoxBgColorLight: undefined,
+                    },
+                  });
+                }}
+                className="text-[11px] text-rose-500 hover:text-rose-600 font-semibold cursor-pointer underline"
+              >
+                {language === 'fa' ? 'بازنشانی به پیش‌فرض پالت' : 'Reset to Default'}
+              </button>
+            )}
+          </div>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            {language === 'fa' 
+              ? 'با این بخش می‌توانید رنگ پس‌زمینه اختصاصی باکس‌ها و کارت‌های تسک و عادت را برای تم تاریک و روشن به صورت دقیق تنظیم کنید.'
+              : 'Directly customize the background color of task and habit card boxes for dark and light modes.'}
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Dark Mode Box Color */}
+            <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/40 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                  <Moon className="w-3 h-3 text-indigo-400" />
+                  {language === 'fa' ? 'رنگ باکس در تم تاریک:' : 'Dark Mode Box Color:'}
+                </span>
+                <input
+                  type="color"
+                  value={advancedSettings.uiAppearance?.customBoxBgColorDark || '#0f172a'}
+                  onChange={(e) => {
+                    onChange({
+                      ...advancedSettings,
+                      uiAppearance: {
+                        ...advancedSettings.uiAppearance,
+                        customBoxBgColorDark: e.target.value,
+                      },
+                    });
+                  }}
+                  className="w-7 h-7 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer p-0 bg-transparent"
+                  title={language === 'fa' ? 'انتخاب رنگ باکس تم تاریک' : 'Pick Dark Box Color'}
+                />
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {[
+                  { name: 'Slate', color: '#0f172a' },
+                  { name: 'Black', color: '#000000' },
+                  { name: 'Midnight', color: '#090d16' },
+                  { name: 'Zinc', color: '#18181b' },
+                  { name: 'Navy', color: '#172554' },
+                  { name: 'Emerald', color: '#064e3b' },
+                ].map((swatch) => (
+                  <button
+                    key={swatch.color}
+                    type="button"
+                    onClick={() => {
+                      onChange({
+                        ...advancedSettings,
+                        uiAppearance: {
+                          ...advancedSettings.uiAppearance,
+                          customBoxBgColorDark: swatch.color,
+                        },
+                      });
+                    }}
+                    className={`w-6 h-6 rounded-md border text-[9px] flex items-center justify-center transition cursor-pointer ${
+                      (advancedSettings.uiAppearance?.customBoxBgColorDark || '#0f172a') === swatch.color
+                        ? 'ring-2 ring-indigo-500 scale-110'
+                        : 'opacity-80 hover:opacity-100'
+                    }`}
+                    style={{ backgroundColor: swatch.color }}
+                    title={swatch.name}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Light Mode Box Color */}
+            <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/40 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                  <Sun className="w-3 h-3 text-amber-500" />
+                  {language === 'fa' ? 'رنگ باکس در تم روشن:' : 'Light Mode Box Color:'}
+                </span>
+                <input
+                  type="color"
+                  value={advancedSettings.uiAppearance?.customBoxBgColorLight || '#ffffff'}
+                  onChange={(e) => {
+                    onChange({
+                      ...advancedSettings,
+                      uiAppearance: {
+                        ...advancedSettings.uiAppearance,
+                        customBoxBgColorLight: e.target.value,
+                      },
+                    });
+                  }}
+                  className="w-7 h-7 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer p-0 bg-transparent"
+                  title={language === 'fa' ? 'انتخاب رنگ باکس تم روشن' : 'Pick Light Box Color'}
+                />
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {[
+                  { name: 'White', color: '#ffffff' },
+                  { name: 'Off-White', color: '#f8fafc' },
+                  { name: 'Sand', color: '#fefcf8' },
+                  { name: 'Sky', color: '#f0f9ff' },
+                  { name: 'Mint', color: '#f0fdf4' },
+                  { name: 'Rose', color: '#fff1f2' },
+                ].map((swatch) => (
+                  <button
+                    key={swatch.color}
+                    type="button"
+                    onClick={() => {
+                      onChange({
+                        ...advancedSettings,
+                        uiAppearance: {
+                          ...advancedSettings.uiAppearance,
+                          customBoxBgColorLight: swatch.color,
+                        },
+                      });
+                    }}
+                    className={`w-6 h-6 rounded-md border border-slate-300 text-[9px] flex items-center justify-center transition cursor-pointer ${
+                      (advancedSettings.uiAppearance?.customBoxBgColorLight || '#ffffff') === swatch.color
+                        ? 'ring-2 ring-amber-500 scale-110'
+                        : 'opacity-80 hover:opacity-100'
+                    }`}
+                    style={{ backgroundColor: swatch.color }}
+                    title={swatch.name}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 4. Shadow Elevation & Height Controls */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
           {/* Shadow Elevation */}
           <div className="space-y-1.5">

@@ -20,7 +20,7 @@ import { translations, getLocalizedDate, formatNumber } from '../utils/translati
 import { calculateAchievements } from '../utils/achievements';
 import { calculateAllHabitsStreak } from '../utils/habitMath';
 import { AllHabitsStreakModal } from './AllHabitsStreakModal';
-import { resolveAppearance } from '../utils/themeAppearance';
+import { resolveAppearance, ResolvedAppearance } from '../utils/themeAppearance';
 
 interface DailySummaryBannerProps {
   habits: Habit[];
@@ -32,6 +32,7 @@ interface DailySummaryBannerProps {
   telegramConfig: TelegramConfig;
   wallet?: UserRewardWallet;
   advancedSettings?: AdvancedSettings;
+  appearance?: ResolvedAppearance;
   onToggleDarkMode: () => void;
   onOpenAddModal: () => void;
   onOpenScienceModal: () => void;
@@ -54,6 +55,7 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
   telegramConfig,
   wallet,
   advancedSettings,
+  appearance: propAppearance,
   onToggleDarkMode,
   onOpenScienceModal,
   onOpenSettings,
@@ -69,7 +71,7 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
   const isFa = language === 'fa';
   const { weekday, dayMonthYear } = getLocalizedDate(language);
 
-  const appearance = resolveAppearance(theme, advancedSettings?.uiAppearance);
+  const appearance = propAppearance || resolveAppearance(theme, advancedSettings?.uiAppearance);
   const isConfiguredTelegram = !!(telegramConfig.botToken && telegramConfig.chatId);
   const achievementsOverview = calculateAchievements(habits, language, tasks, wallet);
   const allHabitsStreak = calculateAllHabitsStreak(habits);
@@ -102,7 +104,10 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
           </div>
 
           {/* Mobile date pill */}
-          <div className={`xl:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${appearance.actionIconClass} ${appearance.shadowClass}`}>
+          <div 
+            style={appearance.actionIconStyle || appearance.cardBoxStyle}
+            className={`xl:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${appearance.actionIconClass} ${appearance.shadowClass}`}
+          >
             <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
             <span className="text-[11px] whitespace-nowrap">{weekday}</span>
           </div>
@@ -112,12 +117,16 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
         <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap xl:flex-nowrap justify-start xl:justify-end">
           
           {/* Cluster 1: Gamification & Rewards (Streak, Wallet, Achievements) */}
-          <div className={`flex items-center gap-1.5 p-1 rounded-2xl border transition-all duration-200 ${appearance.toolbarContainerClass} ${appearance.shadowClass}`}>
+          <div 
+            style={appearance.toolbarContainerStyle || appearance.cardBoxStyle}
+            className={`flex items-center gap-1.5 p-1 rounded-2xl border transition-all duration-200 ${appearance.toolbarContainerClass} ${appearance.shadowClass}`}
+          >
             {/* 1. All Habits Streak */}
             <button
               id="header-all-habits-streak-btn"
               type="button"
               onClick={() => setIsStreakModalOpen(true)}
+              style={allHabitsStreak.currentStreak > 0 ? undefined : (appearance.actionIconStyle || appearance.cardBoxStyle)}
               className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold ${
                 allHabitsStreak.currentStreak > 0
                   ? 'bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 text-orange-800 dark:text-orange-300 border border-orange-400/40 hover:border-orange-500 shadow-2xs'
@@ -167,7 +176,10 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
               id="header-achievements-btn"
               type="button"
               onClick={onOpenAchievements}
-              className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 text-slate-700 dark:text-slate-200 hover:text-amber-800 dark:hover:text-amber-300 border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs"
+              style={appearance.actionIconStyle || appearance.cardBoxStyle}
+              className={`px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs hover:bg-amber-50 dark:hover:bg-amber-950/40 text-slate-700 dark:text-slate-200 hover:text-amber-800 dark:hover:text-amber-300 ${
+                appearance.actionIconClass || 'bg-white dark:bg-slate-800'
+              }`}
               title={t.achievementsBtn}
               aria-label={t.achievementsBtn}
             >
@@ -180,17 +192,23 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
           </div>
 
           {/* Cluster 2: Intelligence, Analytics & Science (AI, Stats, Scientific Model) */}
-          <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs">
+          <div 
+            style={appearance.toolbarContainerStyle || appearance.cardBoxStyle}
+            className={`flex items-center gap-1.5 p-1 rounded-2xl border transition-all duration-200 ${
+              appearance.toolbarContainerClass || 'bg-slate-100/90 dark:bg-slate-900/90 border-slate-200/90 dark:border-slate-800'
+            } ${appearance.shadowClass}`}
+          >
             {/* 4. Pomodoro Focus Timer */}
             {onOpenPomodoro && (
               <button
                 id="header-pomodoro-btn"
                 type="button"
                 onClick={onOpenPomodoro}
+                style={isPomodoroRunning ? undefined : (appearance.actionIconStyle || appearance.cardBoxStyle)}
                 className={`px-2.5 sm:px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs ${
                   isPomodoroRunning
                     ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md shadow-indigo-500/25 animate-pulse'
-                    : 'bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-700 dark:text-slate-200 hover:text-indigo-700 dark:hover:text-indigo-300 border border-slate-200/80 dark:border-slate-700'
+                    : `${appearance.actionIconClass || 'bg-white dark:bg-slate-800'} hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-700 dark:text-slate-200 hover:text-indigo-700 dark:hover:text-indigo-300 border border-slate-200/80 dark:border-slate-700`
                 }`}
                 title={t.pomodoroModalTitle}
                 aria-label={t.pomodoroModalTitle}
@@ -208,7 +226,10 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
               id="header-ai-report-btn"
               type="button"
               onClick={onOpenAIReport}
-              className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/80 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs"
+              style={appearance.actionIconStyle || appearance.cardBoxStyle}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-xl border border-purple-200 dark:border-purple-800/80 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs hover:opacity-90 ${
+                appearance.actionIconClass || 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300'
+              }`}
               title={t.viewAiReport}
               aria-label={t.viewAiReport}
             >
@@ -216,12 +237,15 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
               <span className="hidden lg:inline text-xs">{isFa ? 'گزارش هوش مصنوعی' : 'AI Report'}</span>
             </button>
 
-            {/* 5. Statistics & Analytics */}
+            {/* 6. Statistics & Analytics */}
             <button
               id="header-stats-btn"
               type="button"
               onClick={onOpenStatsModal}
-              className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-slate-700 dark:text-slate-200 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs"
+              style={appearance.actionIconStyle || appearance.cardBoxStyle}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs hover:bg-blue-50 dark:hover:bg-blue-950/40 text-slate-700 dark:text-slate-200 hover:text-blue-700 dark:hover:text-blue-300 ${
+                appearance.actionIconClass || 'bg-white dark:bg-slate-800'
+              }`}
               title={t.statsBtn}
               aria-label={t.statsBtn}
             >
@@ -229,12 +253,15 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
               <span className="hidden lg:inline text-xs">{t.statsBtn}</span>
             </button>
 
-            {/* 6. Scientific Neurobiology Simulator */}
+            {/* 7. Scientific Neurobiology Simulator */}
             <button
               id="header-open-science-modal"
               type="button"
               onClick={onOpenScienceModal}
-              className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-slate-700 dark:text-slate-200 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs"
+              style={appearance.actionIconStyle || appearance.cardBoxStyle}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs hover:bg-blue-50 dark:hover:bg-blue-950/40 text-slate-700 dark:text-slate-200 hover:text-blue-700 dark:hover:text-blue-300 ${
+                appearance.actionIconClass || 'bg-white dark:bg-slate-800'
+              }`}
               title={t.scientificFormulaBtn}
               aria-label={t.scientificFormulaBtn}
             >
@@ -244,17 +271,23 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
           </div>
 
           {/* Cluster 3: System & Utility Tools (Tasks Nav, Date, Settings, Theme) */}
-          <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs">
-            {/* 7. Tasks Quick Switch (if provided) */}
+          <div 
+            style={appearance.toolbarContainerStyle || appearance.cardBoxStyle}
+            className={`flex items-center gap-1.5 p-1 rounded-2xl border transition-all duration-200 ${
+              appearance.toolbarContainerClass || 'bg-slate-100/90 dark:bg-slate-900/90 border-slate-200/90 dark:border-slate-800'
+            } ${appearance.shadowClass}`}
+          >
+            {/* 8. Tasks Quick Switch (if provided) */}
             {onTabChange && (
               <button
                 id="header-tasks-nav-btn"
                 type="button"
                 onClick={() => onTabChange(activeTab === 'tasks' ? 'habits' : 'tasks')}
+                style={activeTab === 'tasks' ? undefined : (appearance.actionIconStyle || appearance.cardBoxStyle)}
                 className={`px-2.5 sm:px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold ${
                   activeTab === 'tasks'
                     ? 'bg-blue-600 text-white border border-blue-600 shadow-2xs'
-                    : 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-indigo-700 dark:text-indigo-300 border border-slate-200/80 dark:border-slate-700'
+                    : `${appearance.actionIconClass || 'bg-white dark:bg-slate-800'} hover:bg-slate-50 dark:hover:bg-slate-750 text-indigo-700 dark:text-indigo-300 border border-slate-200/80 dark:border-slate-700`
                 }`}
                 title={t.tasksSectionTitle}
                 aria-label={t.tasksNavTitle}
@@ -270,32 +303,43 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
               </button>
             )}
 
-            {/* 8. Desktop Date Pill */}
-            <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-2xs">
+            {/* 9. Desktop Date Pill */}
+            <div 
+              style={appearance.actionIconStyle || appearance.cardBoxStyle}
+              className={`hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-2xs ${
+                appearance.actionIconClass || 'bg-white dark:bg-slate-800'
+              }`}
+            >
               <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
               <span className="text-[11px] whitespace-nowrap" id="current-date">
                 {weekday}، {dayMonthYear}
               </span>
             </div>
 
-            {/* 9. Settings */}
+            {/* 10. Settings */}
             <button
               id="header-settings-btn"
               type="button"
               onClick={onOpenSettings}
-              className="relative p-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-all cursor-pointer flex items-center justify-center text-xs shadow-2xs"
+              style={appearance.actionIconStyle || appearance.cardBoxStyle}
+              className={`relative p-2 rounded-xl border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:opacity-90 transition-all cursor-pointer flex items-center justify-center text-xs shadow-2xs ${
+                appearance.actionIconClass || 'bg-white dark:bg-slate-800'
+              }`}
               title={t.settingsTitle}
               aria-label={t.settingsTitle}
             >
               <Settings className="w-4 h-4 text-slate-700 dark:text-slate-200" />
             </button>
 
-            {/* 10. Dark Mode Toggle */}
+            {/* 11. Dark Mode Toggle */}
             <button
               id="theme-toggle-btn"
               type="button"
               onClick={onToggleDarkMode}
-              className="p-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 border border-slate-200/80 dark:border-slate-750 text-slate-700 dark:text-slate-200 transition-all cursor-pointer flex items-center justify-center text-xs shadow-2xs"
+              style={appearance.actionIconStyle || appearance.cardBoxStyle}
+              className={`p-2 rounded-xl border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:opacity-90 transition-all cursor-pointer flex items-center justify-center text-xs shadow-2xs ${
+                appearance.actionIconClass || 'bg-white dark:bg-slate-800'
+              }`}
               title={theme === 'dark' ? t.themeLight : t.themeDark}
               aria-label={t.themeToggle}
             >
@@ -316,6 +360,7 @@ export const DailySummaryBanner: React.FC<DailySummaryBannerProps> = ({
         onClose={() => setIsStreakModalOpen(false)}
         habits={habits}
         language={language}
+        appearance={appearance}
         onOpenStatsModal={onOpenStatsModal}
       />
     </>

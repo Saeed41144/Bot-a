@@ -48,6 +48,7 @@ import { formatNumber, translations } from '../utils/translations';
 import { BrainLevelsModal } from './BrainLevelsModal';
 import { safeStorage } from '../utils/safeStorage';
 import { safeClipboardCopy } from '../utils/safeDom';
+import { ResolvedAppearance } from '../utils/themeAppearance';
 
 interface AchievementsModalProps {
   isOpen: boolean;
@@ -58,6 +59,7 @@ interface AchievementsModalProps {
   wallet?: UserRewardWallet;
   customNovels?: WebNovel[];
   customMovies?: ShopMovie[];
+  appearance?: ResolvedAppearance;
 }
 
 export const AchievementsModal: React.FC<AchievementsModalProps> = ({
@@ -69,6 +71,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
   wallet,
   customNovels = [],
   customMovies = [],
+  appearance,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | 'all' | 'unlocked' | 'locked'>('all');
   const [copied, setCopied] = useState(false);
@@ -244,6 +247,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
     >
       <div 
         dir={t.dir}
+        style={appearance?.modalBoxStyle}
         className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[92vh] transition-all"
         onClick={(e) => e.stopPropagation()}
       >
@@ -643,6 +647,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
         currentXp={overview.totalXp}
         currentLevel={overview.currentLevel}
         nextLevel={overview.nextLevel}
+        appearance={appearance}
       />
     </div>
   );

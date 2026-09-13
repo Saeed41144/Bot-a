@@ -60,6 +60,7 @@ import {
 import { PROVIDER_METADATA, fetchModelsForProvider } from '../utils/aiKeyManager';
 import { AdvancedSettingsTab } from './AdvancedSettingsTab';
 import { BackupSettingsTab } from './BackupSettingsTab';
+import { resolveAppearance, ResolvedAppearance } from '../utils/themeAppearance';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -68,6 +69,7 @@ interface SettingsModalProps {
   theme: ThemeMode;
   telegramConfig: TelegramConfig;
   advancedSettings?: AdvancedSettings;
+  appearance?: ResolvedAppearance;
   wallet?: RewardWallet;
   customNovels?: WebNovel[];
   customMovies?: ShopMovie[];
@@ -94,6 +96,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   theme,
   telegramConfig,
   advancedSettings,
+  appearance: propAppearance,
   wallet,
   customNovels,
   customMovies,
@@ -1156,12 +1159,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   const isTelegramConfigured = Boolean(tempBotToken.trim() && tempChatId.trim());
+  const resolvedAppearance = resolveAppearance(theme, tempAdvancedSettings?.uiAppearance);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
       <div 
         id="settings-modal-content"
         dir={t.dir}
+        style={resolvedAppearance?.modalBoxStyle}
         className="bg-white dark:bg-slate-900 w-full max-w-xl rounded-2xl p-6 md:p-7 shadow-2xl border border-slate-200 dark:border-slate-800 overflow-y-auto max-h-[92vh]"
       >
         {/* Header */}
@@ -2675,6 +2680,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           <AdvancedSettingsTab
             language={language}
             theme={theme}
+            appearance={resolvedAppearance}
             telegramConfig={telegramConfig}
             advancedSettings={tempAdvancedSettings}
             habits={habits}

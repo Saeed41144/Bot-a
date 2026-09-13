@@ -86,7 +86,12 @@ export const TasksListView: React.FC<TasksListViewProps> = ({
   return (
     <div className="flex flex-col gap-6">
       {/* Task Management & Control Header */}
-      <div className={`rounded-3xl p-5 sm:p-6 shadow-2xs flex flex-col gap-5 transition-all overflow-hidden ${appearance?.sectionCardClass || "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"} ${appearance?.maxHeightClass || "h-[500px]"}`}>
+      <div 
+        style={appearance?.cardBoxStyle}
+        className={`rounded-3xl p-5 sm:p-6 border shadow-2xs flex flex-col gap-5 transition-all overflow-hidden ${
+          appearance?.cardBoxClass || 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+        } ${appearance?.shadowClass || 'shadow-2xs'}`}
+      >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pb-5 border-b border-slate-100 dark:border-slate-800/80">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black shadow-inner shrink-0">
@@ -263,7 +268,7 @@ export const TasksListView: React.FC<TasksListViewProps> = ({
       {/* Task Content Container with Smart Scrollbar */}
       {filteredTasks.length > 0 ? (
         <div className="relative">
-          <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 pl-1 pb-4">
+          <div className={`${appearance?.maxHeightClass || 'max-h-[640px] sm:max-h-[720px]'} overflow-y-auto custom-scrollbar pr-1 pl-1 pb-4`}>
             {isCompactView ? (
               /* Compact Dense View */
               <div className="flex flex-col gap-2">
@@ -272,10 +277,11 @@ export const TasksListView: React.FC<TasksListViewProps> = ({
                   return (
                     <div
                       key={task.id}
-                      className={`flex items-center justify-between p-3 rounded-2xl border transition-all gap-3 ${
+                      style={appearance?.cardBoxStyle}
+                      className={`flex items-center justify-between p-3 rounded-2xl border transition-all gap-3 shrink-0 ${
                         isDone
                           ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40'
-                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-300'
+                          : (appearance?.cardBoxClass || 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800') + ' hover:border-blue-300'
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -300,7 +306,7 @@ export const TasksListView: React.FC<TasksListViewProps> = ({
                             {task.priority && (
                               <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-semibold ${
                                 task.priority === 'high' 
-                                  ? 'bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400' 
+                                   ? 'bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400' 
                                   : task.priority === 'medium'
                                   ? 'bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400'
                                   : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
@@ -370,6 +376,7 @@ export const TasksListView: React.FC<TasksListViewProps> = ({
                     key={task.id}
                     task={task}
                     language={language}
+                    appearance={appearance}
                     onToggleComplete={onToggleComplete}
                     onToggleSubtask={onToggleSubtask}
                     onAddSubtask={onAddSubtask}

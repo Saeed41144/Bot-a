@@ -65,6 +65,7 @@ import {
   formatPomodoroDuration,
 } from '../utils/pomodoroStorage';
 import { getTodayString } from '../utils/persianDate';
+import { ResolvedAppearance } from '../utils/themeAppearance';
 
 export interface PomodoroModalProps {
   isOpen: boolean;
@@ -73,6 +74,7 @@ export interface PomodoroModalProps {
   theme?: ThemeMode;
   habits: Habit[];
   tasks: Task[];
+  appearance?: ResolvedAppearance;
 
   // Timer State & Handlers
   mode?: PomodoroMode | string;
@@ -162,6 +164,7 @@ export const PomodoroModal: React.FC<PomodoroModalProps> = ({
   setCompletedSessionsCount,
   pomodoroConfig,
   advancedSettings,
+  appearance,
   telegramConfig,
   onUpdateSettings,
   onOpenSettings,
@@ -916,6 +919,7 @@ export const PomodoroModal: React.FC<PomodoroModalProps> = ({
       <div
         id="pomodoro-modal-content"
         dir={t.dir}
+        style={!isFullscreen ? appearance?.modalBoxStyle : undefined}
         className={`relative flex flex-col transition-all duration-300 ${
           isFullscreen
             ? 'w-full h-full max-w-none max-h-none rounded-none border-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100 overflow-y-auto'

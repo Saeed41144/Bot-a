@@ -25,6 +25,7 @@ import {
 import { Language, ThemeMode } from '../types';
 import { formatNumber } from '../utils/translations';
 import { getAllBrainLevels, BrainLevel, Achievement } from '../utils/achievements';
+import { ResolvedAppearance } from '../utils/themeAppearance';
 
 interface BrainLevelsModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ interface BrainLevelsModalProps {
   currentLevel: BrainLevel;
   nextLevel: BrainLevel | null;
   achievements?: Achievement[];
+  appearance?: ResolvedAppearance;
   onOpenAchievementsModal?: () => void;
 }
 
@@ -45,6 +47,7 @@ export const BrainLevelsModal: React.FC<BrainLevelsModalProps> = ({
   currentLevel,
   nextLevel,
   achievements = [],
+  appearance,
   onOpenAchievementsModal,
 }) => {
   useEffect(() => {
@@ -93,6 +96,7 @@ export const BrainLevelsModal: React.FC<BrainLevelsModalProps> = ({
     >
       <div
         id="brain-levels-modal-container"
+        style={appearance?.modalBoxStyle}
         className="bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl w-full max-w-2xl text-white overflow-hidden my-auto max-h-[90vh] flex flex-col relative"
         onClick={(e) => e.stopPropagation()}
         dir={isRtl ? 'rtl' : 'ltr'}

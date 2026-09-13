@@ -50,6 +50,7 @@ import {
   testAIKeyConnection,
   PROVIDER_METADATA 
 } from '../utils/aiKeyManager';
+import { ResolvedAppearance } from '../utils/themeAppearance';
 
 interface AIReportModalProps {
   isOpen: boolean;
@@ -60,6 +61,7 @@ interface AIReportModalProps {
   language: Language;
   telegramConfig: TelegramConfig;
   aiConfig?: AIConfigurationSettings;
+  appearance?: ResolvedAppearance;
   onUpdateAiConfig?: (newAiConfig: AIConfigurationSettings) => void;
   onOpenSettings?: (initialTab?: 'general' | 'telegram' | 'backup' | 'advanced') => void;
 }
@@ -73,6 +75,7 @@ export const AIReportModal: React.FC<AIReportModalProps> = ({
   language,
   telegramConfig,
   aiConfig,
+  appearance,
   onUpdateAiConfig,
   onOpenSettings,
 }) => {
@@ -487,6 +490,7 @@ export const AIReportModal: React.FC<AIReportModalProps> = ({
       <div 
         id="ai-report-modal-content"
         dir={t.dir}
+        style={appearance?.modalBoxStyle}
         className="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-2xl p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 overflow-y-auto max-h-[92vh] flex flex-col"
       >
         {/* Header */}

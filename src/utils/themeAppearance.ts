@@ -1,3 +1,4 @@
+import React from 'react';
 import { ThemeMode, UIAppearanceSettings, ShadowElevation } from '../types';
 
 export interface AppearancePreset {
@@ -10,6 +11,8 @@ export interface AppearancePreset {
   toolbarContainerClass: string;
   actionIconClass: string;
   sectionCardClass: string;
+  cardBoxClass: string;
+  pageBackgroundClass: string;
   headerBoxClass?: string;
   accentBorderClass: string;
 }
@@ -24,7 +27,9 @@ export const DARK_MODE_PRESETS: AppearancePreset[] = [
     previewGradient: 'from-slate-900 to-slate-950',
     toolbarContainerClass: 'bg-slate-900/90 border-slate-800 backdrop-blur-md',
     actionIconClass: 'bg-slate-800 hover:bg-slate-750 text-slate-200 border-slate-700/80',
-    sectionCardClass: 'bg-slate-900/95 border-slate-800',
+    sectionCardClass: 'bg-slate-900/95 border-slate-800 text-slate-100',
+    cardBoxClass: 'bg-slate-900/95 border-slate-800 text-slate-100',
+    pageBackgroundClass: 'bg-slate-950 text-slate-100',
     headerBoxClass: 'bg-slate-900 border-slate-800',
     accentBorderClass: 'border-slate-800',
   },
@@ -37,7 +42,9 @@ export const DARK_MODE_PRESETS: AppearancePreset[] = [
     previewGradient: 'from-indigo-950 via-slate-900 to-purple-950',
     toolbarContainerClass: 'bg-gradient-to-r from-indigo-950/90 via-slate-900/90 to-purple-950/90 border-indigo-800/60 backdrop-blur-md',
     actionIconClass: 'bg-indigo-950/70 hover:bg-indigo-900/80 text-indigo-200 border-indigo-700/70',
-    sectionCardClass: 'bg-gradient-to-b from-slate-900/95 to-indigo-950/60 border-indigo-900/50',
+    sectionCardClass: 'bg-gradient-to-b from-slate-900/95 to-indigo-950/70 border-indigo-800/60 text-slate-100',
+    cardBoxClass: 'bg-gradient-to-b from-slate-900/95 to-indigo-950/70 border-indigo-800/60 text-slate-100',
+    pageBackgroundClass: 'bg-slate-950 text-slate-100',
     headerBoxClass: 'bg-gradient-to-br from-slate-950 via-indigo-950/90 to-purple-950/80 border-indigo-800/60',
     accentBorderClass: 'border-indigo-800/50',
   },
@@ -50,7 +57,9 @@ export const DARK_MODE_PRESETS: AppearancePreset[] = [
     previewGradient: 'from-zinc-950 to-black',
     toolbarContainerClass: 'bg-black/95 border-zinc-800/90 backdrop-blur-md',
     actionIconClass: 'bg-zinc-900 hover:bg-zinc-800 text-zinc-100 border-zinc-800',
-    sectionCardClass: 'bg-black/90 border-zinc-800/90',
+    sectionCardClass: 'bg-zinc-950 border-zinc-800 text-zinc-100',
+    cardBoxClass: 'bg-zinc-950 border-zinc-800 text-zinc-100',
+    pageBackgroundClass: 'bg-black text-zinc-100',
     headerBoxClass: 'bg-black border-zinc-800',
     accentBorderClass: 'border-zinc-800',
   },
@@ -63,7 +72,9 @@ export const DARK_MODE_PRESETS: AppearancePreset[] = [
     previewGradient: 'from-slate-900 via-emerald-950 to-slate-950',
     toolbarContainerClass: 'bg-gradient-to-r from-slate-900/95 via-emerald-950/80 to-slate-950/95 border-emerald-800/50 backdrop-blur-md',
     actionIconClass: 'bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-200 border-emerald-700/60',
-    sectionCardClass: 'bg-gradient-to-b from-slate-900/95 to-emerald-950/50 border-emerald-900/50',
+    sectionCardClass: 'bg-gradient-to-b from-slate-900/95 to-emerald-950/60 border-emerald-800/60 text-slate-100',
+    cardBoxClass: 'bg-gradient-to-b from-slate-900/95 to-emerald-950/60 border-emerald-800/60 text-slate-100',
+    pageBackgroundClass: 'bg-slate-950 text-slate-100',
     headerBoxClass: 'bg-gradient-to-br from-slate-950 via-emerald-950/80 to-slate-900 border-emerald-800/50',
     accentBorderClass: 'border-emerald-800/50',
   },
@@ -76,7 +87,9 @@ export const DARK_MODE_PRESETS: AppearancePreset[] = [
     previewGradient: 'from-cyan-950 via-slate-900 to-blue-950',
     toolbarContainerClass: 'bg-gradient-to-r from-cyan-950/85 via-slate-900/90 to-blue-950/85 border-cyan-800/50 backdrop-blur-md',
     actionIconClass: 'bg-cyan-950/70 hover:bg-cyan-900/80 text-cyan-200 border-cyan-700/60',
-    sectionCardClass: 'bg-gradient-to-b from-slate-900/95 to-cyan-950/40 border-cyan-900/50',
+    sectionCardClass: 'bg-gradient-to-b from-slate-900/95 to-cyan-950/60 border-cyan-800/60 text-slate-100',
+    cardBoxClass: 'bg-gradient-to-b from-slate-900/95 to-cyan-950/60 border-cyan-800/60 text-slate-100',
+    pageBackgroundClass: 'bg-slate-950 text-slate-100',
     headerBoxClass: 'bg-gradient-to-br from-slate-950 via-cyan-950/80 to-blue-950/90 border-cyan-800/50',
     accentBorderClass: 'border-cyan-800/50',
   },
@@ -92,7 +105,9 @@ export const LIGHT_MODE_PRESETS: AppearancePreset[] = [
     previewGradient: 'from-slate-100 to-white',
     toolbarContainerClass: 'bg-slate-100/90 border-slate-200/90 backdrop-blur-md',
     actionIconClass: 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200/80',
-    sectionCardClass: 'bg-white border-slate-200/80',
+    sectionCardClass: 'bg-white border-slate-200/90 text-slate-800',
+    cardBoxClass: 'bg-white border-slate-200/90 text-slate-800',
+    pageBackgroundClass: 'bg-slate-100/70 text-slate-800',
     headerBoxClass: 'bg-slate-900 text-white border-slate-800',
     accentBorderClass: 'border-slate-200/90',
   },
@@ -105,7 +120,9 @@ export const LIGHT_MODE_PRESETS: AppearancePreset[] = [
     previewGradient: 'from-blue-100 via-sky-50 to-white',
     toolbarContainerClass: 'bg-gradient-to-r from-blue-50/95 via-white to-sky-50/95 border-blue-200/80 backdrop-blur-md',
     actionIconClass: 'bg-white/95 hover:bg-blue-50 text-blue-700 border-blue-200',
-    sectionCardClass: 'bg-gradient-to-b from-white to-blue-50/40 border-blue-200/70',
+    sectionCardClass: 'bg-gradient-to-b from-white to-blue-50/70 border-blue-200/80 text-slate-800',
+    cardBoxClass: 'bg-gradient-to-b from-white to-blue-50/70 border-blue-200/80 text-slate-800',
+    pageBackgroundClass: 'bg-slate-100/70 text-slate-800',
     headerBoxClass: 'bg-slate-900 text-white border-slate-800',
     accentBorderClass: 'border-blue-200',
   },
@@ -118,7 +135,9 @@ export const LIGHT_MODE_PRESETS: AppearancePreset[] = [
     previewGradient: 'from-amber-100 via-stone-100 to-amber-50',
     toolbarContainerClass: 'bg-gradient-to-r from-stone-100/95 via-amber-50/80 to-stone-100/95 border-amber-200/70 backdrop-blur-md',
     actionIconClass: 'bg-white/90 hover:bg-amber-50 text-amber-900 border-amber-200/80',
-    sectionCardClass: 'bg-gradient-to-b from-white to-stone-50 border-stone-200/90',
+    sectionCardClass: 'bg-gradient-to-b from-[#fefcf8] to-[#f7f2ea] border-amber-200/80 text-stone-900',
+    cardBoxClass: 'bg-gradient-to-b from-[#fefcf8] to-[#f7f2ea] border-amber-200/80 text-stone-900',
+    pageBackgroundClass: 'bg-[#f0ebe1] text-stone-900',
     headerBoxClass: 'bg-slate-900 text-white border-slate-800',
     accentBorderClass: 'border-amber-200',
   },
@@ -131,7 +150,9 @@ export const LIGHT_MODE_PRESETS: AppearancePreset[] = [
     previewGradient: 'from-white/90 via-slate-50/80 to-white/90',
     toolbarContainerClass: 'bg-white/80 backdrop-blur-xl border-white/80 shadow-sm',
     actionIconClass: 'bg-white/85 hover:bg-white text-slate-800 border-slate-200/60 backdrop-blur-md',
-    sectionCardClass: 'bg-white/85 backdrop-blur-lg border-white/80',
+    sectionCardClass: 'bg-white/90 backdrop-blur-lg border-white/80 text-slate-800',
+    cardBoxClass: 'bg-white/90 backdrop-blur-lg border-white/80 text-slate-800',
+    pageBackgroundClass: 'bg-slate-100 text-slate-800',
     headerBoxClass: 'bg-slate-900 text-white border-slate-800',
     accentBorderClass: 'border-slate-200/60',
   },
@@ -144,7 +165,9 @@ export const LIGHT_MODE_PRESETS: AppearancePreset[] = [
     previewGradient: 'from-emerald-100 via-teal-50 to-white',
     toolbarContainerClass: 'bg-gradient-to-r from-emerald-50/95 via-white to-teal-50/95 border-emerald-200/80 backdrop-blur-md',
     actionIconClass: 'bg-white/95 hover:bg-emerald-50 text-emerald-800 border-emerald-200',
-    sectionCardClass: 'bg-gradient-to-b from-white to-emerald-50/40 border-emerald-200/70',
+    sectionCardClass: 'bg-gradient-to-b from-white to-emerald-50/70 border-emerald-200/80 text-slate-800',
+    cardBoxClass: 'bg-gradient-to-b from-white to-emerald-50/70 border-emerald-200/80 text-slate-800',
+    pageBackgroundClass: 'bg-slate-100/70 text-slate-800',
     headerBoxClass: 'bg-slate-900 text-white border-slate-800',
     accentBorderClass: 'border-emerald-200',
   },
@@ -180,47 +203,96 @@ export function getMaxHeightClass(preference?: 'compact' | 'balanced' | 'spaciou
   }
 }
 
-export function resolveAppearance(
-  theme: ThemeMode,
-  settings?: UIAppearanceSettings
-): {
+export interface ResolvedAppearance {
   toolbarContainerClass: string;
+  toolbarContainerStyle?: React.CSSProperties;
   actionIconClass: string;
+  actionIconStyle?: React.CSSProperties;
   sectionCardClass: string;
+  cardBoxClass: string;
+  cardBoxStyle?: React.CSSProperties;
+  modalBoxClass: string;
+  modalBoxStyle?: React.CSSProperties;
+  pageBackgroundClass: string;
   headerBoxClass: string;
   accentBorderClass: string;
   shadowClass: string;
   maxHeightClass: string;
-} {
+  customBoxBgColor?: string;
+}
+
+export function resolveAppearance(
+  theme: ThemeMode,
+  settings?: UIAppearanceSettings
+): ResolvedAppearance {
   const isDark = theme === 'dark';
   const shadowClass = getShadowClass(settings?.shadowElevation);
   const maxHeightClass = getMaxHeightClass(settings?.homeListMaxHeight);
 
+  // Determine custom box background color if defined
+  const activeCustomBoxBg = isDark
+    ? (settings?.customBoxBgColorDark || settings?.customBoxBgColor)
+    : (settings?.customBoxBgColorLight || settings?.customBoxBgColor);
+
+  const cardBoxStyle: React.CSSProperties | undefined = activeCustomBoxBg 
+    ? { backgroundColor: activeCustomBoxBg } 
+    : undefined;
+
+  const toolbarContainerStyle: React.CSSProperties | undefined = activeCustomBoxBg
+    ? { backgroundColor: activeCustomBoxBg }
+    : undefined;
+
+  const actionIconStyle: React.CSSProperties | undefined = activeCustomBoxBg
+    ? { backgroundColor: activeCustomBoxBg }
+    : undefined;
+
+  const modalBoxStyle: React.CSSProperties | undefined = activeCustomBoxBg
+    ? { backgroundColor: activeCustomBoxBg }
+    : undefined;
+
   if (isDark) {
     const presetId = settings?.darkModePreset || 'midnight_slate';
     const preset = DARK_MODE_PRESETS.find((p) => p.id === presetId) || DARK_MODE_PRESETS[0];
+    const baseBoxClass = settings?.customCardDark || preset.cardBoxClass;
 
     return {
       toolbarContainerClass: settings?.customToolbarDark || preset.toolbarContainerClass,
+      toolbarContainerStyle,
       actionIconClass: settings?.customIconDark || preset.actionIconClass,
-      sectionCardClass: settings?.customCardDark || preset.sectionCardClass,
+      actionIconStyle,
+      sectionCardClass: baseBoxClass,
+      cardBoxClass: baseBoxClass,
+      cardBoxStyle,
+      modalBoxClass: baseBoxClass,
+      modalBoxStyle,
+      pageBackgroundClass: preset.pageBackgroundClass || 'bg-slate-950 text-slate-100',
       headerBoxClass: preset.headerBoxClass || 'bg-slate-900 border-slate-800',
       accentBorderClass: preset.accentBorderClass,
       shadowClass,
       maxHeightClass,
+      customBoxBgColor: activeCustomBoxBg,
     };
   } else {
     const presetId = settings?.lightModePreset || 'clean_white';
     const preset = LIGHT_MODE_PRESETS.find((p) => p.id === presetId) || LIGHT_MODE_PRESETS[0];
+    const baseBoxClass = settings?.customCardLight || preset.cardBoxClass;
 
     return {
       toolbarContainerClass: settings?.customToolbarLight || preset.toolbarContainerClass,
+      toolbarContainerStyle,
       actionIconClass: settings?.customIconLight || preset.actionIconClass,
-      sectionCardClass: settings?.customCardLight || preset.sectionCardClass,
+      actionIconStyle,
+      sectionCardClass: baseBoxClass,
+      cardBoxClass: baseBoxClass,
+      cardBoxStyle,
+      modalBoxClass: baseBoxClass,
+      modalBoxStyle,
+      pageBackgroundClass: preset.pageBackgroundClass || 'bg-slate-100/70 text-slate-800',
       headerBoxClass: preset.headerBoxClass || 'bg-slate-900 text-white border-slate-800',
       accentBorderClass: preset.accentBorderClass,
       shadowClass,
       maxHeightClass,
+      customBoxBgColor: activeCustomBoxBg,
     };
   }
 }

@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { X, BookOpen, Brain, TrendingUp, CheckCircle, AlertTriangle, Sparkles } from 'lucide-react';
 import { Language } from '../types';
 import { translations, formatNumber } from '../utils/translations';
+import { ResolvedAppearance } from '../utils/themeAppearance';
 
 interface ScientificModelModalProps {
   isOpen: boolean;
   language: Language;
+  appearance?: ResolvedAppearance;
   onClose: () => void;
 }
 
 export const ScientificModelModal: React.FC<ScientificModelModalProps> = ({
   isOpen,
   language,
+  appearance,
   onClose,
 }) => {
   const [simulatedDays, setSimulatedDays] = useState(25);
@@ -35,6 +38,7 @@ export const ScientificModelModal: React.FC<ScientificModelModalProps> = ({
       <div 
         id="scientific-model-modal"
         dir={t.dir}
+        style={appearance?.modalBoxStyle}
         className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl p-6 md:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 overflow-y-auto max-h-[90vh]"
       >
         {/* Header */}

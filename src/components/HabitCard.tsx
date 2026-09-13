@@ -23,6 +23,7 @@ import { getCurrentWeekMatrixDays, getTodayString, formatDateStringToPersianShor
 interface HabitCardProps {
   habit: Habit;
   language: Language;
+  appearance?: any;
   onToggleDay: (habitId: string, dateStr: string) => void;
   onRequestDelete: (habit: Habit) => void;
   onOpenInfo?: () => void;
@@ -42,6 +43,7 @@ const ICONS_MAP: Record<string, React.ElementType> = {
 export const HabitCard: React.FC<HabitCardProps> = ({
   habit,
   language,
+  appearance,
   onToggleDay,
   onRequestDelete,
   onOpenInfo,
@@ -91,7 +93,10 @@ export const HabitCard: React.FC<HabitCardProps> = ({
     <div 
       id={`habit-card-${habit.id}`}
       dir={t.dir}
-      className="bg-white dark:bg-slate-800/90 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs relative overflow-hidden group hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all duration-200 flex flex-col justify-between"
+      style={appearance?.cardBoxStyle}
+      className={`p-5 rounded-2xl border relative overflow-hidden group hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all duration-200 flex flex-col justify-between shrink-0 ${
+        appearance?.cardBoxClass || 'bg-white dark:bg-slate-800/90 border-slate-200 dark:border-slate-700/80'
+      } ${appearance?.shadowClass || 'shadow-xs'}`}
     >
       {/* Action Buttons: Pomodoro & Delete (Left for RTL, Right for LTR) */}
       <div className={`absolute top-3.5 ${t.dir === 'rtl' ? 'left-3.5' : 'right-3.5'} z-10 flex items-center gap-1`}>

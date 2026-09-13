@@ -526,6 +526,9 @@ export interface UIAppearanceSettings {
   customIconLight?: string;
   customCardDark?: string;
   customCardLight?: string;
+  customBoxBgColor?: string; // Custom hex color for boxes/cards (e.g. #ffffff or #1e293b)
+  customBoxBgColorDark?: string;
+  customBoxBgColorLight?: string;
 }
 
 export interface AdvancedSettings {
