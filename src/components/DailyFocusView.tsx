@@ -376,7 +376,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
           {/* Habits List Container with Smart Max-Height & Custom Scrollbar */}
           {pendingHabitsList.length > 0 ? (
             <div className="relative">
-              <div className="max-h-[500px] overflow-y-auto custom-scrollbar flex flex-col gap-2.5 pr-1 pl-1 pb-2">
+              <div className="max-h-[400px] overflow-y-auto custom-scrollbar flex flex-col gap-2.5 pr-1 pl-1 pb-2">
                 {pendingHabitsList.map((habit) => {
                   if (isHabitsCompact) {
                     return (
@@ -533,7 +533,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
           {/* Tasks List Container with Smart Max-Height & Custom Scrollbar */}
           {pendingTasksList.length > 0 ? (
             <div className="relative">
-              <div className="max-h-[500px] overflow-y-auto custom-scrollbar flex flex-col gap-2.5 pr-1 pl-1 pb-2">
+              <div className="max-h-[400px] overflow-y-auto custom-scrollbar flex flex-col gap-2.5 pr-1 pl-1 pb-2">
                 {pendingTasksList.map((task) => {
                   if (isTasksCompact) {
                     return (

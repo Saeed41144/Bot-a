@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Habit, Task, Language, ThemeMode, TelegramConfig, FullBackupSettings, UserRewardWallet, WebNovel, WebNovelChapter, ShopMovie, VideoPlaylist, VideoEpisode, RewardTransaction, AdvancedSettings, PomodoroAmbientSound } from './types';
+import { resolveAppearance } from './utils/themeAppearance';
 import { getInitialHabits } from './data/defaultHabits';
 import { getInitialTasks } from './data/defaultTasks';
 import { HabitCard } from './components/HabitCard';
@@ -3000,12 +3001,13 @@ export default function App() {
     return acc + calculateHabitStats(h, todayStr, language).automaticity;
   }, 0);
   const avgAutomaticity = totalHabits > 0 ? Math.round(totalAuto / totalHabits) : 0;
+  const appearance = resolveAppearance(theme, advancedSettings.uiAppearance);
   const achievementsOverview = calculateAchievements(habits, language, tasks, wallet, customNovels, customMovies);
 
   return (
     <div 
       dir={t.dir}
-      className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased p-4 sm:p-6 md:p-8 flex flex-col justify-between selection:bg-blue-100 dark:selection:bg-blue-900 selection:text-blue-900 dark:selection:text-blue-200 font-sans transition-colors duration-200"
+      className={`min-h-screen antialiased p-4 sm:p-6 md:p-8 flex flex-col justify-between selection:bg-blue-100 dark:selection:bg-blue-900 selection-text-blue-900 dark:selection:text-blue-200 font-sans transition-colors duration-200 ${appearance.sectionCardClass}`}
     >
       <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
         {/* Header with Theme Toggle & Settings */}

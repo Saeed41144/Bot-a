@@ -298,7 +298,7 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
       {/* Habits Content Container with Smart Scrollbar */}
       {sortedHabits.length > 0 ? (
         <div className="relative">
-          <div className="max-h-[640px] overflow-y-auto custom-scrollbar pr-1 pl-1 pb-4">
+          <div className="max-h-[400px] overflow-y-auto custom-scrollbar pr-1 pl-1 pb-4">
             {isCompactView ? (
               /* Compact Dense View */
               <div className="flex flex-col gap-2">
