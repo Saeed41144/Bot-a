@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Sparkles, 
   CheckCircle2, 
@@ -7,14 +7,15 @@ import {
   Flame, 
   Zap, 
   Plus, 
-  ArrowRight,
-  TrendingUp,
-  Clock,
-  Coins,
-  Target,
-  Award,
-  Trophy,
-  ChevronRight
+  TrendingUp, 
+  Clock, 
+  Coins, 
+  Target, 
+  Award, 
+  LayoutGrid, 
+  List, 
+  Timer, 
+  ChevronDown
 } from 'lucide-react';
 import { Habit, Task, Language } from '../types';
 import { translations, formatNumber } from '../utils/translations';
@@ -24,6 +25,7 @@ import { HabitCard } from './HabitCard';
 import { TaskCard } from './TaskCard';
 
 interface DailyFocusViewProps {
+  appearance?: any;
   habits: Habit[];
   tasks: Task[];
   language: Language;
@@ -48,9 +50,6 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
   habits,
   tasks,
   language,
-  achievementsOverview: passedOverview,
-  onOpenAchievements,
-  onOpenBrainLevels,
   onToggleHabit,
   onDeleteHabit,
   onToggleTask,
@@ -63,10 +62,15 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
   onDeleteTask,
   onOpenPomodoroForHabit,
   onOpenPomodoroForTask,
+  appearance,
 }) => {
   const t = translations[language];
   const todayStr = getTodayString();
-  const achievementsOverview = passedOverview || calculateAchievements(habits, language);
+  const isFa = language === 'fa';
+
+  // Toggle states for compact/expanded views
+  const [isHabitsCompact, setIsHabitsCompact] = useState(false);
+  const [isTasksCompact, setIsTasksCompact] = useState(false);
 
   // Habit metrics
   const totalHabits = habits.length;
@@ -115,39 +119,39 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
   // Motivational message
   const getMotivationalMessage = () => {
     if (totalDailyItems === 0) {
-      return language === 'fa' 
+      return isFa 
         ? 'هنوز عادتی یا تسکی برای امروز تعریف نشده است. با دکمه‌های زیر اولین مورد را اضافه کنید!' 
         : 'No habits or tasks defined for today yet. Use the buttons below to get started!';
     }
     if (dailyFocusPercentage === 100) {
-      return language === 'fa'
+      return isFa
         ? 'فوق‌العاده است! تمام برنامه‌ها و عادات امروز را کامل انجام دادید. روزتان را فتح کردید! 🏆'
         : 'Spectacular! You have completed all scheduled habits and tasks for today. Day conquered! 🏆';
     }
     if (dailyFocusPercentage >= 70) {
-      return language === 'fa'
+      return isFa
         ? 'عملکرد عالی! تنها چند گام کوچک تا تکمیل ۱۰۰٪ تمام برنامه‌های امروز فاصله دارید ⚡'
         : 'Amazing progress! Just a few more steps to achieve 100% daily completion ⚡';
     }
     if (dailyFocusPercentage >= 35) {
-      return language === 'fa'
+      return isFa
         ? 'مسیر خوبی را طی کرده‌اید؛ تمرکزتان را حفظ کنید و باقی کارهای روز را جلو ببرید 🎯'
         : 'Great momentum! Keep your focus and knock out the remaining items for today 🎯';
     }
-    return language === 'fa'
+    return isFa
       ? 'روز تازه با فرصت‌های نو! با انجام اولین عادت یا تسک انرژی امروزتان را آزاد کنید ✨'
       : 'A fresh day full of opportunities! Check off your first habit or task to build momentum ✨';
   };
 
   // SVG Circular Gauge calculation
   const circleRadius = 38;
-  const circleCircumference = 2 * Math.PI * circleRadius; // ~238.76
+  const circleCircumference = 2 * Math.PI * circleRadius;
   const strokeDashoffset = circleCircumference - (dailyFocusPercentage / 100) * circleCircumference;
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Daily Progress Focus Header Box - Premium Dark Aesthetic */}
-      <div className="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-5 sm:p-7 text-slate-100 flex flex-col gap-5">
+      {/* Daily Progress Focus Header Box */}
+      <div className={`relative overflow-hidden rounded-3xl shadow-2xl p-5 sm:p-7 text-slate-100 flex flex-col gap-5 ${appearance?.headerBoxClass || "bg-slate-900 border border-slate-800"}`}>
         {/* Subtle Ambient Glow Effects */}
         <div className="absolute -top-24 -left-24 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
@@ -171,17 +175,17 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
             {dailyFocusPercentage === 100 ? (
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                {language === 'fa' ? 'تکمیل ۱۰۰٪ روز' : '100% Completed'}
+                {isFa ? 'تکمیل ۱۰۰٪ روز' : '100% Completed'}
               </span>
             ) : dailyFocusPercentage >= 50 ? (
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40">
                 <TrendingUp className="w-3.5 h-3.5" />
-                {language === 'fa' ? 'بیش از نیمی انجام شد' : 'Over 50% Done'}
+                {isFa ? 'بیش از نیمی انجام شد' : 'Over 50% Done'}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
                 <Target className="w-3.5 h-3.5 text-amber-400" />
-                {language === 'fa' ? 'در حال پیشبرد روز' : 'In Progress'}
+                {isFa ? 'در حال پیشبرد روز' : 'In Progress'}
               </span>
             )}
           </div>
@@ -193,33 +197,16 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
           <div className="flex flex-col gap-2.5 max-w-xl text-right">
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-400 shrink-0" />
-              <span>{language === 'fa' ? 'پیشرفت و تمرکز کل روز' : 'Daily Overall Focus & Progress'}</span>
+              <span>{isFa ? 'پیشرفت و تمرکز کل روز' : 'Daily Overall Focus & Progress'}</span>
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               {getMotivationalMessage()}
             </p>
-
-            {/* Glowing Overall Progress Bar */}
-            <div className="mt-2 flex flex-col gap-1.5">
-              <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
-                <span>{language === 'fa' ? 'سطح دستیابی به اهداف امروز:' : 'Daily achievement rate:'}</span>
-                <span className="text-white font-bold">
-                  {formatNumber(totalDailyCompleted, language)} از {formatNumber(totalDailyItems, language)} مورد ({formatNumber(dailyFocusPercentage, language)}٪)
-                </span>
-              </div>
-              <div className="w-full h-3 bg-slate-800/90 rounded-full overflow-hidden p-0.5 border border-slate-700/80">
-                <div 
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-emerald-400 transition-all duration-700 shadow-sm"
-                  style={{ width: `${dailyFocusPercentage}%` }}
-                />
-              </div>
-            </div>
           </div>
 
           {/* Circular SVG Gauge in Dark Container */}
           <div className="relative shrink-0 flex items-center justify-center p-3 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-inner">
             <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 96 96">
-              {/* Background Track */}
               <circle
                 cx="48"
                 cy="48"
@@ -228,13 +215,12 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
                 stroke="#1e293b"
                 strokeWidth="8"
               />
-              {/* Animated Progress Stroke */}
               <circle
                 cx="48"
                 cy="48"
                 r={circleRadius}
                 fill="none"
-                stroke="url(#progressGradient)"
+                stroke="url(#progressGradientFocus)"
                 strokeWidth="8"
                 strokeDasharray={circleCircumference}
                 strokeDashoffset={strokeDashoffset}
@@ -242,7 +228,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
                 className="transition-all duration-700 ease-out"
               />
               <defs>
-                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id="progressGradientFocus" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#06b6d4" />
                   <stop offset="50%" stopColor="#3b82f6" />
                   <stop offset="100%" stopColor="#10b981" />
@@ -250,13 +236,12 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
               </defs>
             </svg>
 
-            {/* Percentage Text Center */}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
               <span className="text-xl sm:text-2xl font-black text-white tracking-tight">
                 {formatNumber(dailyFocusPercentage, language)}٪
               </span>
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                {language === 'fa' ? 'پیشرفت' : 'Progress'}
+                {isFa ? 'پیشرفت' : 'Progress'}
               </span>
             </div>
           </div>
@@ -275,7 +260,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
                   {t.habitsNavTitle}
                 </span>
                 <span className="text-xs font-bold text-slate-100">
-                  {formatNumber(completedHabits, language)} از {formatNumber(totalHabits, language)} {language === 'fa' ? 'عادت' : 'habits'}
+                  {formatNumber(completedHabits, language)} از {formatNumber(totalHabits, language)} {isFa ? 'عادت' : 'habits'}
                 </span>
               </div>
             </div>
@@ -295,7 +280,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
                   {t.tasksNavTitle}
                 </span>
                 <span className="text-xs font-bold text-slate-100">
-                  {formatNumber(completedTasksCount, language)} از {formatNumber(totalTasksCount, language)} {language === 'fa' ? 'تسک' : 'tasks'}
+                  {formatNumber(completedTasksCount, language)} از {formatNumber(totalTasksCount, language)} {isFa ? 'تسک' : 'tasks'}
                 </span>
               </div>
             </div>
@@ -312,7 +297,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
               </div>
               <div className="flex flex-col">
                 <span className="text-[11px] font-medium text-slate-400">
-                  {language === 'fa' ? 'دستاورد امروز' : 'Today Rewards'}
+                  {isFa ? 'دستاورد امروز' : 'Today Rewards'}
                 </span>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-100">
                   <span className="text-amber-400 flex items-center gap-0.5">
@@ -335,12 +320,17 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
       </div>
 
       {/* Two-Column Grid: Habits on Left, Tasks on Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Left Column: Today's Habits */}
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
+        <div 
+          style={appearance?.cardBoxStyle}
+          className={`rounded-3xl p-5 border flex flex-col gap-4 ${
+            appearance?.cardBoxClass || 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+          } ${appearance?.shadowClass || 'shadow-2xs'}`}
+        >
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center">
                 <Flame className="w-4 h-4" />
               </div>
               <div>
@@ -349,41 +339,122 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
                 </h3>
                 <span className="text-xs text-slate-500 dark:text-slate-400">
                   {pendingHabitsList.length > 0
-                    ? (language === 'fa'
+                    ? (isFa
                         ? `${formatNumber(pendingHabitsList.length, language)} عادت باقی‌مانده (${formatNumber(completedHabits, language)} انجام شده)`
                         : `${formatNumber(pendingHabitsList.length, language)} remaining (${formatNumber(completedHabits, language)} done)`)
                     : totalHabits > 0
-                    ? (language === 'fa'
+                    ? (isFa
                         ? `تمام ${formatNumber(totalHabits, language)} عادت امروز انجام شد 🎉`
                         : `All ${formatNumber(totalHabits, language)} habits done today 🎉`)
-                    : (language === 'fa' ? 'بدون عادت ثبت شده' : 'No habits yet')}
+                    : (isFa ? 'بدون عادت ثبت شده' : 'No habits yet')}
                 </span>
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={onOpenAddHabit}
-              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.newHabitBtn}</span>
-            </button>
+            <div className="flex items-center gap-1.5">
+              {/* Compact Toggle Button */}
+              {pendingHabitsList.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsHabitsCompact(!isHabitsCompact)}
+                  className={`p-1.5 rounded-xl border transition cursor-pointer flex items-center gap-1 text-xs font-semibold ${
+                    isHabitsCompact
+                      ? 'bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
+                  }`}
+                  title={isFa ? (isHabitsCompact ? 'تغییر به نمای کارتی' : 'تغییر به نمای فشرده') : 'Toggle View Mode'}
+                >
+                  {isHabitsCompact ? <LayoutGrid className="w-3.5 h-3.5" /> : <List className="w-3.5 h-3.5" />}
+                  <span className="text-[11px] hidden sm:inline">{isHabitsCompact ? (isFa ? 'کارتی' : 'Cards') : (isFa ? 'فشرده' : 'Compact')}</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={onOpenAddHabit}
+                className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/60 hover:bg-orange-100 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{t.newHabitBtn}</span>
+              </button>
+            </div>
           </div>
 
-          {/* Habits Cards - Only remaining active habits for today */}
+          {/* Habits List Container with Smart Max-Height & Custom Scrollbar */}
           {pendingHabitsList.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              {pendingHabitsList.map((habit) => (
-                <HabitCard
-                  key={habit.id}
-                  habit={habit}
-                  language={language}
-                  onToggleDay={onToggleHabit}
-                  onRequestDelete={onDeleteHabit}
-                  onOpenPomodoro={onOpenPomodoroForHabit}
-                />
-              ))}
+            <div className="relative">
+              <div className={`${appearance?.maxHeightClass || 'max-h-[460px] sm:max-h-[520px]'} overflow-y-auto custom-scrollbar flex flex-col gap-3 pr-1 pl-1 pb-2`}>
+                {pendingHabitsList.map((habit) => {
+                  if (isHabitsCompact) {
+                    return (
+                      <div
+                        key={habit.id}
+                        style={appearance?.cardBoxStyle}
+                        className={`flex items-center justify-between p-2.5 rounded-2xl border hover:border-orange-300 transition-all gap-2 shrink-0 ${
+                          appearance?.cardBoxClass || 'bg-slate-50 dark:bg-slate-800/80 border-slate-200/80 dark:border-slate-750'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <button
+                            type="button"
+                            onClick={() => onToggleHabit(habit.id, todayStr)}
+                            className="w-7 h-7 rounded-xl border-2 border-slate-300 dark:border-slate-600 hover:border-orange-500 dark:hover:border-orange-400 flex items-center justify-center transition cursor-pointer shrink-0"
+                            title={isFa ? 'تیک زدن عادت' : 'Check Habit'}
+                          >
+                            <span className="text-xs">{habit.icon || '⚡'}</span>
+                          </button>
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
+                              {habit.name}
+                            </span>
+                            {habit.category && (
+                              <span className="text-[10px] text-slate-400 truncate">
+                                {habit.category}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {onOpenPomodoroForHabit && (
+                            <button
+                              type="button"
+                              onClick={() => onOpenPomodoroForHabit(habit)}
+                              className="p-1 rounded-lg text-slate-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-700 transition"
+                              title={isFa ? 'شروع پومودورو' : 'Start Pomodoro'}
+                            >
+                              <Timer className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => onToggleHabit(habit.id, todayStr)}
+                            className="px-2.5 py-1 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-[11px] font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                          >
+                            <CheckCircle2 className="w-3 h-3" />
+                            <span>{isFa ? 'ثبت' : 'Done'}</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <HabitCard
+                      key={habit.id}
+                      habit={habit}
+                      language={language}
+                      appearance={appearance}
+                      onToggleDay={onToggleHabit}
+                      onRequestDelete={onDeleteHabit}
+                      onOpenPomodoro={onOpenPomodoroForHabit}
+                    />
+                  );
+                })}
+              </div>
+              {pendingHabitsList.length > 4 && (
+                <div className="pointer-events-none absolute bottom-0 inset-x-0 h-6 bg-gradient-to-t from-white dark:from-slate-900 to-transparent rounded-b-3xl" />
+              )}
             </div>
           ) : habits.length > 0 ? (
             <div className="bg-emerald-50/80 dark:bg-emerald-950/30 rounded-2xl p-6 text-center border border-emerald-200 dark:border-emerald-800/50 flex flex-col items-center justify-center gap-2.5">
@@ -391,27 +462,23 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <span className="text-sm font-bold text-emerald-900 dark:text-emerald-200">
-                {language === 'fa' 
+                {isFa 
                   ? 'تمامی عادات امروز با موفقیت انجام شدند!' 
-                  : language === 'ar'
-                  ? 'تم إنجاز جميع عادات اليوم بنجاح!'
                   : 'All habits for today are completed!'}
               </span>
               <p className="text-xs text-emerald-700 dark:text-emerald-400 max-w-xs leading-relaxed">
-                {language === 'fa'
-                  ? `آفرین! هر ${formatNumber(completedHabits, language)} عادت امروز ثبت شدند و از لیست نمای تلفیقی پنهان شدند.`
-                  : language === 'ar'
-                  ? `أحسنت! تم تسجيل جميع العادات واكتمالها لليوم.`
-                  : `Great work! All ${formatNumber(completedHabits, language)} habits are done and cleared from Daily Focus.`}
+                {isFa
+                  ? `آفرین! هر ${formatNumber(completedHabits, language)} عادت امروز ثبت شدند.`
+                  : `Great work! All ${formatNumber(completedHabits, language)} habits are done.`}
               </p>
             </div>
           ) : (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 text-center border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-2">
+            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 text-center border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-2">
               <span className="text-xs text-slate-400">{t.noHabitsYet}</span>
               <button
                 type="button"
                 onClick={onOpenAddHabit}
-                className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-xs font-bold hover:bg-blue-100 transition cursor-pointer"
+                className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 text-xs font-bold hover:bg-orange-100 transition cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>{t.newHabitBtn}</span>
@@ -421,10 +488,15 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
         </div>
 
         {/* Right Column: Today's Tasks */}
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
+        <div 
+          style={appearance?.cardBoxStyle}
+          className={`rounded-3xl p-5 border flex flex-col gap-4 ${
+            appearance?.cardBoxClass || 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+          } ${appearance?.shadowClass || 'shadow-2xs'}`}
+        >
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                 <ListTodo className="w-4 h-4" />
               </div>
               <div>
@@ -433,73 +505,152 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
                 </h3>
                 <span className="text-xs text-slate-500 dark:text-slate-400">
                   {pendingTasksList.length > 0
-                    ? (language === 'fa'
+                    ? (isFa
                         ? `${formatNumber(pendingTasksList.length, language)} تسک باقی‌مانده (${formatNumber(completedTasksCount, language)} انجام شده)`
                         : `${formatNumber(pendingTasksList.length, language)} remaining (${formatNumber(completedTasksCount, language)} done)`)
                     : totalTasksCount > 0
-                    ? (language === 'fa'
+                    ? (isFa
                         ? `تمام ${formatNumber(totalTasksCount, language)} تسک امروز تکمیل شد ✨`
                         : `All ${formatNumber(totalTasksCount, language)} tasks done today ✨`)
-                    : (language === 'fa' ? 'بدون تسک ثبت شده' : 'No tasks yet')}
+                    : (isFa ? 'بدون تسک ثبت شده' : 'No tasks yet')}
                 </span>
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={onOpenAddTask}
-              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.createTaskTitle}</span>
-            </button>
+            <div className="flex items-center gap-1.5">
+              {/* Compact Toggle Button */}
+              {pendingTasksList.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsTasksCompact(!isTasksCompact)}
+                  className={`p-1.5 rounded-xl border transition cursor-pointer flex items-center gap-1 text-xs font-semibold ${
+                    isTasksCompact
+                      ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
+                  }`}
+                  title={isFa ? (isTasksCompact ? 'تغییر به نمای کارتی' : 'تغییر به نمای فشرده') : 'Toggle View Mode'}
+                >
+                  {isTasksCompact ? <LayoutGrid className="w-3.5 h-3.5" /> : <List className="w-3.5 h-3.5" />}
+                  <span className="text-[11px] hidden sm:inline">{isTasksCompact ? (isFa ? 'کارتی' : 'Cards') : (isFa ? 'فشرده' : 'Compact')}</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={onOpenAddTask}
+                className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{t.createTaskTitle}</span>
+              </button>
+            </div>
           </div>
 
-          {/* Tasks Cards - Only remaining active tasks for today */}
+          {/* Tasks List Container with Smart Max-Height & Custom Scrollbar */}
           {pendingTasksList.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              {pendingTasksList.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  language={language}
-                  onToggleComplete={onToggleTask}
-                  onToggleSubtask={onToggleSubtask}
-                  onAddSubtask={onAddSubtask}
-                  onDeleteSubtask={onDeleteSubtask}
-                  onEditTask={onEditTask}
-                  onDeleteTask={onDeleteTask}
-                  onOpenPomodoro={onOpenPomodoroForTask}
-                />
-              ))}
+            <div className="relative">
+              <div className={`${appearance?.maxHeightClass || 'max-h-[460px] sm:max-h-[520px]'} overflow-y-auto custom-scrollbar flex flex-col gap-3 pr-1 pl-1 pb-2`}>
+                {pendingTasksList.map((task) => {
+                  if (isTasksCompact) {
+                    return (
+                      <div
+                        key={task.id}
+                        style={appearance?.cardBoxStyle}
+                        className={`flex items-center justify-between p-2.5 rounded-2xl border hover:border-blue-300 transition-all gap-2 shrink-0 ${
+                          appearance?.cardBoxClass || 'bg-slate-50 dark:bg-slate-800/80 border-slate-200/80 dark:border-slate-750'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <button
+                            type="button"
+                            onClick={() => onToggleTask(task.id)}
+                            className="w-6 h-6 rounded-lg border-2 border-slate-300 dark:border-slate-600 hover:border-blue-500 flex items-center justify-center transition cursor-pointer shrink-0"
+                            title={isFa ? 'تیک زدن تسک' : 'Check Task'}
+                          >
+                            <span className="w-2.5 h-2.5 rounded-sm bg-transparent" />
+                          </button>
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
+                              {task.title}
+                            </span>
+                            {task.priority && (
+                              <span className={`text-[10px] font-semibold ${
+                                task.priority === 'high' ? 'text-rose-500' : task.priority === 'medium' ? 'text-amber-500' : 'text-slate-400'
+                              }`}>
+                                {task.priority === 'high' ? (isFa ? 'اولویت بالا' : 'High') : task.priority === 'medium' ? (isFa ? 'متوسط' : 'Medium') : (isFa ? 'عادی' : 'Low')}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {onOpenPomodoroForTask && (
+                            <button
+                              type="button"
+                              onClick={() => onOpenPomodoroForTask(task)}
+                              className="p-1 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-slate-700 transition"
+                              title={isFa ? 'شروع پومودورو' : 'Start Pomodoro'}
+                            >
+                              <Timer className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => onToggleTask(task.id)}
+                            className="px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                          >
+                            <CheckCircle2 className="w-3 h-3" />
+                            <span>{isFa ? 'انجام' : 'Done'}</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      language={language}
+                      appearance={appearance}
+                      onToggleComplete={onToggleTask}
+                      onToggleSubtask={onToggleSubtask}
+                      onAddSubtask={onAddSubtask}
+                      onDeleteSubtask={onDeleteSubtask}
+                      onEditTask={onEditTask}
+                      onDeleteTask={onDeleteTask}
+                      onOpenPomodoro={onOpenPomodoroForTask}
+                    />
+                  );
+                })}
+              </div>
+              {pendingTasksList.length > 4 && (
+                <div className="pointer-events-none absolute bottom-0 inset-x-0 h-6 bg-gradient-to-t from-white dark:from-slate-900 to-transparent rounded-b-3xl" />
+              )}
             </div>
-          ) : todayTasks.length > 0 ? (
-            <div className="bg-indigo-50/80 dark:bg-indigo-950/30 rounded-2xl p-6 text-center border border-indigo-200 dark:border-indigo-800/50 flex flex-col items-center justify-center gap-2.5">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 flex items-center justify-center shadow-xs">
+          ) : tasks.length > 0 ? (
+            <div className="bg-blue-50/80 dark:bg-blue-950/30 rounded-2xl p-6 text-center border border-blue-200 dark:border-blue-800/50 flex flex-col items-center justify-center gap-2.5">
+              <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 flex items-center justify-center shadow-xs">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <span className="text-sm font-bold text-indigo-900 dark:text-indigo-200">
-                {language === 'fa' 
-                  ? 'تمامی تسک‌های امروز با موفقیت تکمیل شدند!' 
-                  : language === 'ar'
-                  ? 'تم إكمال جميع مهام اليوم بنجاح!'
-                  : 'All tasks for today are completed!'}
+              <span className="text-sm font-bold text-blue-900 dark:text-blue-200">
+                {isFa 
+                  ? 'تمامی تسک‌های برنامه‌ریزی‌شده انجام شدند!' 
+                  : 'All tasks completed!'}
               </span>
-              <p className="text-xs text-indigo-700 dark:text-indigo-400 max-w-xs leading-relaxed">
-                {language === 'fa'
-                  ? `عالی بود! هر ${formatNumber(completedTasksCount, language)} تسک انجام شدند و از لیست نمای تلفیقی پنهان شدند.`
-                  : language === 'ar'
-                  ? `رائع! تم إكمال جميع المهام وإخفاؤها من القائمة.`
-                  : `Well done! All ${formatNumber(completedTasksCount, language)} tasks are completed and cleared from Daily Focus.`}
+              <p className="text-xs text-blue-700 dark:text-blue-400 max-w-xs leading-relaxed">
+                {isFa
+                  ? `تبریک! تمام ${formatNumber(completedTasksCount, language)} تسک فعال با موفقیت تکمیل شدند.`
+                  : `Great job! All ${formatNumber(completedTasksCount, language)} tasks are finished.`}
               </p>
             </div>
           ) : (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 text-center border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-2">
+            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 text-center border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-2">
               <span className="text-xs text-slate-400">{t.noTasksYet}</span>
               <button
                 type="button"
                 onClick={onOpenAddTask}
-                className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-xs font-bold hover:bg-indigo-100 transition cursor-pointer"
+                className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-xs font-bold hover:bg-blue-100 transition cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>{t.createTaskTitle}</span>
@@ -511,4 +662,3 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
     </div>
   );
 };
-

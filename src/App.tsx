@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Habit, Task, Language, ThemeMode, TelegramConfig, FullBackupSettings, UserRewardWallet, WebNovel, WebNovelChapter, ShopMovie, VideoPlaylist, VideoEpisode, RewardTransaction, AdvancedSettings, PomodoroAmbientSound } from './types';
+import { resolveAppearance } from './utils/themeAppearance';
 import { getInitialHabits } from './data/defaultHabits';
 import { getInitialTasks } from './data/defaultTasks';
 import { HabitCard } from './components/HabitCard';
@@ -7,6 +8,7 @@ import { AddHabitModal } from './components/AddHabitModal';
 import { AddTaskModal } from './components/AddTaskModal';
 import { TasksListView } from './components/TasksListView';
 import { HabitsListView } from './components/HabitsListView';
+import type { AppearancePreset } from './utils/themeAppearance';
 import { DailyFocusView } from './components/DailyFocusView';
 import { ScientificModelModal } from './components/ScientificModelModal';
 import { DeleteConfirmModal } from './components/DeleteConfirmModal';
@@ -3000,12 +3002,13 @@ export default function App() {
     return acc + calculateHabitStats(h, todayStr, language).automaticity;
   }, 0);
   const avgAutomaticity = totalHabits > 0 ? Math.round(totalAuto / totalHabits) : 0;
+  const appearance = resolveAppearance(theme, advancedSettings.uiAppearance);
   const achievementsOverview = calculateAchievements(habits, language, tasks, wallet, customNovels, customMovies);
 
   return (
     <div 
       dir={t.dir}
-      className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased p-4 sm:p-6 md:p-8 flex flex-col justify-between selection:bg-blue-100 dark:selection:bg-blue-900 selection:text-blue-900 dark:selection:text-blue-200 font-sans transition-colors duration-200"
+      className={`min-h-screen antialiased p-4 sm:p-6 md:p-8 flex flex-col justify-between selection:bg-blue-100 dark:selection:bg-blue-900 selection-text-blue-900 dark:selection:text-blue-200 font-sans transition-colors duration-200 ${appearance.pageBackgroundClass}`}
     >
       <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col">
         {/* Header with Theme Toggle & Settings */}
@@ -3018,6 +3021,8 @@ export default function App() {
           theme={theme}
           telegramConfig={telegramConfig}
           wallet={wallet}
+          advancedSettings={advancedSettings}
+          appearance={appearance}
           onToggleDarkMode={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
           onOpenAddModal={() => setIsAddModalOpen(true)}
           onOpenScienceModal={() => setIsScienceModalOpen(true)}
@@ -3093,6 +3098,7 @@ export default function App() {
         {/* Render Active View */}
         {activeView === 'daily_focus' ? (
           <DailyFocusView
+            appearance={appearance}
             habits={habits}
             tasks={tasks}
             language={language}
@@ -3120,6 +3126,7 @@ export default function App() {
           />
         ) : activeView === 'tasks' ? (
           <TasksListView
+            appearance={appearance}
             tasks={tasks}
             language={language}
             onToggleComplete={handleToggleTask}
@@ -3141,6 +3148,7 @@ export default function App() {
         ) : (
           /* Habits Management & 66-Day Habits View */
           <HabitsListView
+            appearance={appearance}
             habits={habits}
             language={language}
             onToggleDay={handleToggleDay}
@@ -3252,6 +3260,7 @@ export default function App() {
       <ScientificModelModal
         isOpen={isScienceModalOpen}
         language={language}
+        appearance={appearance}
         onClose={() => setIsScienceModalOpen(false)}
       />
 
@@ -3276,6 +3285,7 @@ export default function App() {
         onClose={() => setIsSettingsModalOpen(false)}
         language={language}
         theme={theme}
+        appearance={appearance}
         telegramConfig={telegramConfig}
         advancedSettings={advancedSettings}
         wallet={wallet}
@@ -3304,6 +3314,7 @@ export default function App() {
         tasks={tasks}
         wallet={wallet}
         language={language}
+        appearance={appearance}
         telegramConfig={telegramConfig}
         aiConfig={advancedSettings.aiConfig}
         onUpdateAiConfig={(newAiConfig) => handleUpdateAdvancedSettings({ ...advancedSettings, aiConfig: newAiConfig })}
@@ -3320,6 +3331,7 @@ export default function App() {
         tasks={tasks}
         language={language}
         theme={theme}
+        appearance={appearance}
         telegramConfig={telegramConfig}
         aiConfig={advancedSettings.aiConfig}
         onOpenAIReport={() => setIsAIReportModalOpen(true)}
@@ -3336,6 +3348,7 @@ export default function App() {
         onClose={() => setIsAchievementsModalOpen(false)}
         habits={habits}
         language={language}
+        appearance={appearance}
         tasks={tasks}
         wallet={wallet}
         customNovels={customNovels}
@@ -3346,6 +3359,7 @@ export default function App() {
         isOpen={isBrainLevelsModalOpen}
         onClose={() => setIsBrainLevelsModalOpen(false)}
         language={language}
+        appearance={appearance}
         currentXp={achievementsOverview.totalXp}
         currentLevel={achievementsOverview.currentLevel}
         nextLevel={achievementsOverview.nextLevel}
@@ -3358,6 +3372,7 @@ export default function App() {
         isOpen={isShopModalOpen}
         onClose={() => setIsShopModalOpen(false)}
         language={language}
+        appearance={appearance}
         wallet={wallet}
         customNovels={customNovels}
         customMovies={customMovies}
@@ -3460,6 +3475,7 @@ export default function App() {
         }}
         language={language}
         theme={theme}
+        appearance={appearance}
         habits={habits}
         tasks={tasks}
         initialTargetType={pomodoroTargetType}
