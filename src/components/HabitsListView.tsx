@@ -5,18 +5,13 @@ import {
   Zap, 
   Flame, 
   CheckCircle2, 
-  Clock, 
-  TrendingUp, 
-  Brain, 
-  Sparkles, 
-  Filter, 
-  Sliders, 
-  ArrowUpDown, 
-  Award, 
   ShieldCheck, 
-  Activity,
-  Layers,
-  CheckCheck
+  ArrowUpDown, 
+  LayoutGrid, 
+  List, 
+  Timer,
+  Trash2,
+  Info
 } from 'lucide-react';
 import { Habit, Language } from '../types';
 import { translations, formatNumber } from '../utils/translations';
@@ -45,7 +40,6 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
   onRequestDelete,
   onOpenAddModal,
   onOpenScienceModal,
-  onToggleAllToday,
   onOpenPomodoro,
 }) => {
   const t = translations[language];
@@ -57,6 +51,7 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
   const [selectedFilter, setSelectedFilter] = useState<HabitFilterType>('pending');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortOption, setSortOption] = useState<HabitSortType>('default');
+  const [isCompactView, setIsCompactView] = useState(false);
 
   // Extract unique categories
   const categories = Array.from(new Set(habits.map((h) => h.category).filter(Boolean))) as string[];
@@ -70,9 +65,6 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
   const totalHabits = habits.length;
   const completedHabits = habits.filter((h) => !!h.history[todayStr]).length;
   const pendingHabits = totalHabits - completedHabits;
-  const totalAuto = habits.reduce((acc, h) => acc + (habitStatsMap.get(h.id)?.automaticity || 0), 0);
-  const avgAutomaticity = totalHabits > 0 ? Math.round(totalAuto / totalHabits) : 0;
-  const establishedCount = habits.filter((h) => (habitStatsMap.get(h.id)?.automaticity || 0) >= 66).length;
 
   // Filter habits
   const filteredHabits = habits.filter((habit) => {
@@ -124,88 +116,56 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* 🌟 HABITS MANAGEMENT & CONTROL BOX (باکس جامع مدیریت عادات) */}
+      {/* 🌟 HABITS MANAGEMENT & CONTROL BOX */}
       <div 
         id="habits-management-box"
         className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col gap-5 transition-all"
       >
-        {/* Banner Header: Title, Description & KPI Cards */}
+        {/* Banner Header: Title & Action Buttons */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pb-5 border-b border-slate-100 dark:border-slate-800/80">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black shadow-inner shrink-0">
-              <Zap className="w-6 h-6 fill-blue-500/20" />
+            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-black shadow-inner shrink-0">
+              <Zap className="w-6 h-6 fill-orange-500/20" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">
                   {isFa ? 'مدیریت عادات و روتین‌های ۶۶ روزه' : isAr ? 'إدارة العادات والروتينات ٦٦ يوماً' : 'Habits & 66-Day Routines Manager'}
                 </h2>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800">
                   {t.scientificModelBadge}
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 {isFa 
                   ? 'کنترل، فیلتر پیشرفته، دسته‌بندی و ثبت هوشمند مسیر خودکارسازی رفتاری'
-                  : isAr
-                  ? 'التحكم والتصفية وتصنيف وتسجيل العادات اليومية'
                   : 'Manage, filter, categorize, and track behavioral automaticity'}
               </p>
             </div>
           </div>
 
-          {/* Quick KPI Stats & Action Buttons */}
+          {/* Action Buttons & Compact View Toggle */}
           <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
-            {/* Pending Today */}
-            <div className="bg-slate-50 dark:bg-slate-800/80 px-3.5 py-2 rounded-xl border border-slate-100 dark:border-slate-750">
-              <span className="text-[10px] text-slate-400 block font-semibold">{t.filterPending}</span>
-              <span className="text-sm font-black text-blue-600 dark:text-blue-400">
-                {formatNumber(pendingHabits, language)}
-              </span>
-            </div>
-
-            {/* Completed Today */}
-            <div className="bg-slate-50 dark:bg-slate-800/80 px-3.5 py-2 rounded-xl border border-slate-100 dark:border-slate-750">
-              <span className="text-[10px] text-slate-400 block font-semibold">{t.filterCompleted}</span>
-              <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                {formatNumber(completedHabits, language)}
-              </span>
-            </div>
-
-            {/* Avg Automaticity */}
-            <div className="bg-slate-50 dark:bg-slate-800/80 px-3.5 py-2 rounded-xl border border-slate-100 dark:border-slate-750">
-              <span className="text-[10px] text-slate-400 block font-semibold">{isFa ? 'میانگین خودکارسازی' : 'Avg Auto'}</span>
-              <span className="text-sm font-black text-purple-600 dark:text-purple-400">
-                {formatNumber(avgAutomaticity, language)}٪
-              </span>
-            </div>
-
-            {/* Established Count */}
-            <div className="bg-slate-50 dark:bg-slate-800/80 px-3.5 py-2 rounded-xl border border-slate-100 dark:border-slate-750 hidden sm:block">
-              <span className="text-[10px] text-slate-400 block font-semibold">{isFa ? 'تثبیت‌شده' : 'Established'}</span>
-              <span className="text-sm font-black text-amber-500 dark:text-amber-400">
-                {formatNumber(establishedCount, language)}
-              </span>
-            </div>
-
-            {/* Action Buttons */}
-            {onToggleAllToday && pendingHabits > 0 && (
-              <button
-                type="button"
-                onClick={onToggleAllToday}
-                className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
-                title={isFa ? 'ثبت تمام عادات باقی‌مانده امروز' : 'Mark all pending habits done today'}
-              >
-                <CheckCheck className="w-4 h-4" />
-                <span className="hidden md:inline">{isFa ? 'ثبت همه امروز' : 'Check All'}</span>
-              </button>
-            )}
+            {/* Toggle View Mode Button */}
+            <button
+              type="button"
+              onClick={() => setIsCompactView(!isCompactView)}
+              className={`p-2 sm:px-3 sm:py-2 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                isCompactView
+                  ? 'bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
+              }`}
+              title={isFa ? (isCompactView ? 'سوئیچ به نمای کارتی کامل' : 'سوئیچ به نمای فشرده تک‌خطی') : 'Toggle Compact View'}
+            >
+              {isCompactView ? <LayoutGrid className="w-4 h-4" /> : <List className="w-4 h-4" />}
+              <span>{isCompactView ? (isFa ? 'نمای کارتی' : 'Card View') : (isFa ? 'نمای فشرده' : 'Compact View')}</span>
+            </button>
 
             <button
-              id="open-add-habit-modal-top-btn"
+              id="open-add-habit-btn"
               type="button"
               onClick={onOpenAddModal}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition shadow-md shadow-blue-600/20 cursor-pointer flex items-center gap-1.5 shrink-0"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition shadow-xs cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>{t.newHabitBtn}</span>
@@ -214,24 +174,21 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
         </div>
 
         {/* Search Bar */}
-        <div className="relative w-full">
-          <Search className={`w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 ${t.dir === 'rtl' ? 'right-3.5' : 'left-3.5'}`} />
+        <div className="relative">
+          <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
-            id="search-habits-input"
+            id="habit-search-input"
             type="text"
-            placeholder={isFa ? 'جستجو در نام، هدف یا دسته‌بندی عادات...' : t.searchPlaceholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className={`w-full py-2.5 text-xs rounded-2xl border border-slate-200 dark:border-slate-750 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400 ${
-              t.dir === 'rtl' ? 'pr-10 pl-3' : 'pl-10 pr-3'
-            }`}
+            placeholder={isFa ? 'جستجو در نام عادات، دسته‌بندی یا دلیل انجام...' : 'Search habits, tags, or why...'}
+            className="w-full pl-4 pr-10 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-750 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition"
           />
         </div>
 
-        {/* Filter Toolbar: Status Chips, Category Filter, and Sorting */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-          {/* Status / Stage Filters */}
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full lg:w-auto pb-1 lg:pb-0">
+        {/* Filter Pills */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
             {/* Pending Today */}
             <button
               id="filter-habit-pending-btn"
@@ -240,7 +197,7 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                 selectedFilter === 'pending'
                   ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-750'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
               }`}
             >
               <span>{t.filterPending}</span>
@@ -259,7 +216,7 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                 selectedFilter === 'completed'
                   ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-750'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
               }`}
             >
               <span>{t.filterCompleted}</span>
@@ -278,14 +235,14 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                 selectedFilter === 'top_streaks'
                   ? 'bg-orange-600 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-750'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
               }`}
             >
               <Flame className="w-3 h-3 text-amber-300" />
               <span>{isFa ? 'بیشترین زنجیره' : 'Top Streaks'}</span>
             </button>
 
-            {/* Established 66+ Days */}
+            {/* Established */}
             <button
               id="filter-habit-established-btn"
               type="button"
@@ -293,7 +250,7 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                 selectedFilter === 'established'
                   ? 'bg-purple-600 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-750'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
               }`}
             >
               <ShieldCheck className="w-3 h-3 text-purple-300" />
@@ -308,7 +265,7 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                 selectedFilter === 'all'
                   ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-750'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
               }`}
             >
               <span>{t.filterAll}</span>
@@ -320,75 +277,148 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
             </button>
           </div>
 
-          {/* Right Controls: Sort & Categories */}
-          <div className="flex items-center gap-2.5 w-full lg:w-auto justify-between lg:justify-end flex-wrap">
-            {/* Sort Selector */}
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value as HabitSortType)}
-                className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-750 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
-              >
-                <option value="default">{isFa ? 'ترتیب پیش‌فرض' : 'Default Order'}</option>
-                <option value="automaticity">{isFa ? 'بیشترین خودکارسازی' : 'Highest Automaticity'}</option>
-                <option value="streak">{isFa ? 'بیشترین زنجیره (Streak)' : 'Longest Streak'}</option>
-                <option value="name">{isFa ? 'بر اساس نام (الفبا)' : 'By Name (A-Z)'}</option>
-                <option value="newest">{isFa ? 'جدیدترین عادات' : 'Newest'}</option>
-              </select>
-            </div>
-
-            {/* Category Chips */}
-            {categories.length > 0 && (
-              <div className="flex items-center gap-1 overflow-x-auto max-w-xs">
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory('all')}
-                  className={`text-[11px] font-semibold px-2 py-1 rounded-lg border transition cursor-pointer whitespace-nowrap ${
-                    selectedCategory === 'all'
-                      ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800'
-                      : 'bg-transparent text-slate-500 border-transparent hover:bg-slate-100 dark:hover:bg-slate-800'
-                  }`}
-                >
-                  {isFa ? 'همه دسته‌ها' : 'All Categories'}
-                </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`text-[11px] font-semibold px-2 py-1 rounded-lg border transition cursor-pointer whitespace-nowrap ${
-                      selectedCategory === cat
-                        ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800'
-                        : 'bg-transparent text-slate-500 border-transparent hover:bg-slate-100 dark:hover:bg-slate-800'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            )}
+          {/* Sort Selector */}
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 shrink-0">
+            <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value as HabitSortType)}
+              className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-750 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium focus:outline-none cursor-pointer"
+            >
+              <option value="default">{isFa ? 'ترتیب پیش‌فرض' : 'Default Order'}</option>
+              <option value="automaticity">{isFa ? 'بیشترین خودکارسازی' : 'Highest Automaticity'}</option>
+              <option value="streak">{isFa ? 'بیشترین زنجیره (Streak)' : 'Longest Streak'}</option>
+              <option value="name">{isFa ? 'بر اساس نام' : 'By Name'}</option>
+              <option value="newest">{isFa ? 'جدیدترین عادات' : 'Newest'}</option>
+            </select>
           </div>
         </div>
       </div>
 
-      {/* Habits Grid / Cards Section */}
+      {/* Habits Content Container with Smart Scrollbar */}
       {sortedHabits.length > 0 ? (
-        <div id="habits-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sortedHabits.map((habit) => (
-            <HabitCard
-              key={habit.id}
-              habit={habit}
-              language={language}
-              onToggleDay={onToggleDay}
-              onRequestDelete={onRequestDelete}
-              onOpenInfo={onOpenScienceModal}
-              onOpenPomodoro={onOpenPomodoro}
-            />
-          ))}
+        <div className="relative">
+          <div className="max-h-[640px] overflow-y-auto custom-scrollbar pr-1 pl-1 pb-4">
+            {isCompactView ? (
+              /* Compact Dense View */
+              <div className="flex flex-col gap-2">
+                {sortedHabits.map((habit) => {
+                  const stats = habitStatsMap.get(habit.id);
+                  const isDoneToday = !!habit.history[todayStr];
+
+                  return (
+                    <div
+                      key={habit.id}
+                      className={`flex items-center justify-between p-3 rounded-2xl border transition-all gap-3 ${
+                        isDoneToday
+                          ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40'
+                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-orange-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <button
+                          type="button"
+                          onClick={() => onToggleDay(habit.id, todayStr)}
+                          className={`w-9 h-9 rounded-xl border-2 flex items-center justify-center transition cursor-pointer shrink-0 ${
+                            isDoneToday
+                              ? 'bg-emerald-500 border-emerald-500 text-white'
+                              : 'border-slate-300 dark:border-slate-600 hover:border-orange-500 text-slate-700 dark:text-slate-200'
+                          }`}
+                        >
+                          {isDoneToday ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-base">{habit.icon || '⚡'}</span>}
+                        </button>
+                        <div className="flex flex-col min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className={`text-xs sm:text-sm font-bold truncate ${
+                              isDoneToday ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'
+                            }`}>
+                              {habit.name}
+                            </span>
+                            {habit.category && (
+                              <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500">
+                                {habit.category}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
+                            <span className="flex items-center gap-1 text-orange-500 font-semibold">
+                              <Flame className="w-3 h-3" />
+                              {formatNumber(stats?.currentStreak || 0, language)} روز
+                            </span>
+                            <span>•</span>
+                            <span className="text-blue-500 font-semibold">
+                              {formatNumber(stats?.automaticity || 0, language)}٪ خودکار
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {onOpenPomodoro && (
+                          <button
+                            type="button"
+                            onClick={() => onOpenPomodoro(habit)}
+                            className="p-1.5 rounded-xl text-slate-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 transition"
+                            title={isFa ? 'شروع پومودورو' : 'Pomodoro'}
+                          >
+                            <Timer className="w-4 h-4" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => onOpenScienceModal()}
+                          className="p-1.5 rounded-xl text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-slate-800 transition"
+                          title={isFa ? 'اطلاعات علمی' : 'Science Info'}
+                        >
+                          <Info className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onRequestDelete(habit)}
+                          className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-800 transition"
+                          title={isFa ? 'حذف عادت' : 'Delete'}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onToggleDay(habit.id, todayStr)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
+                            isDoneToday
+                              ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
+                              : 'bg-orange-500 hover:bg-orange-600 text-white shadow-2xs'
+                          }`}
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>{isDoneToday ? (isFa ? 'انجام شد' : 'Done') : (isFa ? 'ثبت' : 'Check')}</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              /* Standard Full Card Grid */
+              <div id="habits-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {sortedHabits.map((habit) => (
+                  <HabitCard
+                    key={habit.id}
+                    habit={habit}
+                    language={language}
+                    onToggleDay={onToggleDay}
+                    onRequestDelete={onRequestDelete}
+                    onOpenInfo={onOpenScienceModal}
+                    onOpenPomodoro={onOpenPomodoro}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          {sortedHabits.length > 4 && (
+            <div className="pointer-events-none absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-slate-50 dark:from-slate-950 to-transparent" />
+          )}
         </div>
       ) : selectedFilter === 'pending' && habits.length > 0 && completedHabits === totalHabits ? (
-        /* All Habits Completed Today Celebration Card */
         <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-slate-900 rounded-3xl p-8 text-center border border-green-200 dark:border-green-800/50 shadow-xs flex flex-col items-center justify-center gap-3">
           <div className="w-16 h-16 rounded-2xl bg-green-100 dark:bg-green-900/60 text-green-600 dark:text-green-400 flex items-center justify-center shadow-inner">
             <CheckCircle2 className="w-8 h-8" />
@@ -412,7 +442,6 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
           </div>
         </div>
       ) : (
-        /* Empty State */
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 text-center border border-dashed border-slate-300 dark:border-slate-800 flex flex-col items-center justify-center">
           <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 flex items-center justify-center mb-3">
             <Zap className="w-7 h-7" />
@@ -427,7 +456,7 @@ export const HabitsListView: React.FC<HabitsListViewProps> = ({
             <button
               type="button"
               onClick={onOpenAddModal}
-              className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>{t.newHabitBtn}</span>

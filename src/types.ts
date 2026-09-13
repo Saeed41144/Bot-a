@@ -513,6 +513,21 @@ export interface PomodoroSessionRecord {
   notes?: string;
 }
 
+export type ShadowElevation = 'none' | 'soft' | 'medium' | 'deep' | 'glow';
+
+export interface UIAppearanceSettings {
+  homeListMaxHeight?: 'compact' | 'balanced' | 'spacious' | 'unlimited';
+  shadowElevation?: ShadowElevation;
+  darkModePreset?: string;
+  lightModePreset?: string;
+  customToolbarDark?: string;
+  customToolbarLight?: string;
+  customIconDark?: string;
+  customIconLight?: string;
+  customCardDark?: string;
+  customCardLight?: string;
+}
+
 export interface AdvancedSettings {
   defaultTargetDays?: number; // default 66
   enableSoundEffects?: boolean; // default true
@@ -523,6 +538,8 @@ export interface AdvancedSettings {
   autoOptimizeStorage?: boolean; // default true
   aiConfig?: AIConfigurationSettings;
   storeStoragePath?: string; // Custom directory path on device for store files (novels, playlists, videos)
+  uiAppearance?: UIAppearanceSettings;
+  homeListMaxHeight?: 'compact' | 'balanced' | 'spacious' | 'unlimited';
   // Pomodoro Settings
   pomodoroFocusDuration?: number; // default 25
   pomodoroShortBreakDuration?: number; // default 5

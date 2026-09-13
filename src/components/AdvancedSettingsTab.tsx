@@ -53,7 +53,13 @@ import {
   Zap,
   FileAudio,
   VolumeX,
+  Palette,
+  Sun,
+  Moon,
+  Eye,
+  Maximize2
 } from 'lucide-react';
+import { DARK_MODE_PRESETS, LIGHT_MODE_PRESETS } from '../utils/themeAppearance';
 import { Language, ThemeMode, TelegramConfig, AdvancedSettings, Habit, RewardWallet, WebNovel, ShopMovie, VideoPlaylist, AISettingsSection, PomodoroCustomSound } from '../types';
 import { translations, formatNumber } from '../utils/translations';
 import { 
@@ -1162,6 +1168,166 @@ export const AdvancedSettingsTab: React.FC<AdvancedSettingsTabProps> = ({
             />
           </div>
         )}
+      </div>
+
+      {/* Section 0: UI Appearance, Theme Presets & Shadows */}
+      <div 
+        id="appearance-customization-panel"
+        className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-5 shadow-xs"
+      >
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60">
+              <Palette className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>{language === 'fa' ? 'شخصی‌سازی ظاهر، پس‌زمینه و سایه‌ها' : 'Appearance, Presets & Shadows'}</span>
+              </h4>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                {language === 'fa' 
+                  ? 'انتخاب پالت و گرادیانت اختصاصی تم تاریک/روشن، عمق سایه‌ها و ارتفاع باکس‌های صفحه اصلی'
+                  : 'Customize dark/light theme presets, elevation shadows, and home list scroll heights'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 1. Dark Mode Presets */}
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+            <Moon className="w-3.5 h-3.5 text-indigo-500" />
+            <span>{language === 'fa' ? 'پالت‌های تم تاریک (Dark Mode Presets)' : 'Dark Mode Presets'}</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {DARK_MODE_PRESETS.map((preset) => {
+              const isSelected = (advancedSettings.uiAppearance?.darkModePreset || 'midnight_slate') === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => {
+                    onChange({
+                      ...advancedSettings,
+                      uiAppearance: {
+                        ...advancedSettings.uiAppearance,
+                        darkModePreset: preset.id,
+                      },
+                    });
+                  }}
+                  className={`p-3 rounded-xl border text-right transition cursor-pointer flex flex-col gap-1.5 ${
+                    isSelected
+                      ? 'bg-slate-900 text-white border-indigo-500 ring-2 ring-indigo-500/30 shadow-md'
+                      : 'bg-slate-50 dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold">{preset.nameFa}</span>
+                    <div className={`w-5 h-5 rounded-full bg-gradient-to-r ${preset.previewGradient} border border-white/20 shrink-0`} />
+                  </div>
+                  <span className="text-[10px] text-slate-400 leading-tight">
+                    {preset.descriptionFa}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 2. Light Mode Presets */}
+        <div className="space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+            <Sun className="w-3.5 h-3.5 text-amber-500" />
+            <span>{language === 'fa' ? 'پالت‌های تم روشن (Light Mode Presets)' : 'Light Mode Presets'}</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {LIGHT_MODE_PRESETS.map((preset) => {
+              const isSelected = (advancedSettings.uiAppearance?.lightModePreset || 'clean_white') === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => {
+                    onChange({
+                      ...advancedSettings,
+                      uiAppearance: {
+                        ...advancedSettings.uiAppearance,
+                        lightModePreset: preset.id,
+                      },
+                    });
+                  }}
+                  className={`p-3 rounded-xl border text-right transition cursor-pointer flex flex-col gap-1.5 ${
+                    isSelected
+                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white border-amber-500 ring-2 ring-amber-500/30 shadow-md'
+                      : 'bg-slate-50 dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold">{preset.nameFa}</span>
+                    <div className={`w-5 h-5 rounded-full bg-gradient-to-r ${preset.previewGradient} border border-slate-300 shrink-0`} />
+                  </div>
+                  <span className="text-[10px] text-slate-400 leading-tight">
+                    {preset.descriptionFa}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 3. Shadow Elevation & Height Controls */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+          {/* Shadow Elevation */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+              {language === 'fa' ? 'شدت سایه و برجستگی باکس‌ها:' : 'Shadow Elevation:'}
+            </label>
+            <select
+              value={advancedSettings.uiAppearance?.shadowElevation || 'soft'}
+              onChange={(e) => {
+                onChange({
+                  ...advancedSettings,
+                  uiAppearance: {
+                    ...advancedSettings.uiAppearance,
+                    shadowElevation: e.target.value as any,
+                  },
+                });
+              }}
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-750 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer"
+            >
+              <option value="none">{language === 'fa' ? 'تخت و بدون سایه (Flat)' : 'Flat (None)'}</option>
+              <option value="soft">{language === 'fa' ? 'سایه بسیار نرم (Soft - پیش‌فرض)' : 'Soft (Default)'}</option>
+              <option value="medium">{language === 'fa' ? 'سایه متوسط (Medium Elevation)' : 'Medium'}</option>
+              <option value="deep">{language === 'fa' ? 'سایه عمیق سه‌بعدی (Deep 3D)' : 'Deep 3D'}</option>
+              <option value="glow">{language === 'fa' ? 'هاله نئونی و درخشان (Glow Effect)' : 'Glow Neon'}</option>
+            </select>
+          </div>
+
+          {/* Home List Height Mode */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+              {language === 'fa' ? 'ارتفاع هوشمند لیست‌های صفحه اصلی:' : 'Home Lists Max Height:'}
+            </label>
+            <select
+              value={advancedSettings.uiAppearance?.homeListMaxHeight || 'balanced'}
+              onChange={(e) => {
+                onChange({
+                  ...advancedSettings,
+                  uiAppearance: {
+                    ...advancedSettings.uiAppearance,
+                    homeListMaxHeight: e.target.value as any,
+                  },
+                });
+              }}
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-750 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer"
+            >
+              <option value="compact">{language === 'fa' ? 'فشرده و جمع‌وجور (۴۰۰ پیکسل)' : 'Compact (400px)'}</option>
+              <option value="balanced">{language === 'fa' ? 'متعادل و استاندارد (۵۴۰ پیکسل - پیش‌فرض)' : 'Balanced (540px)'}</option>
+              <option value="spacious">{language === 'fa' ? 'گسترده (۷۰۰ پیکسل)' : 'Spacious (700px)'}</option>
+              <option value="unlimited">{language === 'fa' ? 'نامحدود (بدون اسکرول داخلی)' : 'Unlimited (No scroll box)'}</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Section 1: Scientific Target Days & Mathematical Model */}
