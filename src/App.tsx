@@ -8,6 +8,7 @@ import { AddHabitModal } from './components/AddHabitModal';
 import { AddTaskModal } from './components/AddTaskModal';
 import { TasksListView } from './components/TasksListView';
 import { HabitsListView } from './components/HabitsListView';
+import type { AppearancePreset } from './utils/themeAppearance';
 import { DailyFocusView } from './components/DailyFocusView';
 import { ScientificModelModal } from './components/ScientificModelModal';
 import { DeleteConfirmModal } from './components/DeleteConfirmModal';
@@ -3095,6 +3096,7 @@ export default function App() {
         {/* Render Active View */}
         {activeView === 'daily_focus' ? (
           <DailyFocusView
+            appearance={appearance}
             habits={habits}
             tasks={tasks}
             language={language}
@@ -3122,6 +3124,7 @@ export default function App() {
           />
         ) : activeView === 'tasks' ? (
           <TasksListView
+            appearance={appearance}
             tasks={tasks}
             language={language}
             onToggleComplete={handleToggleTask}
@@ -3143,6 +3146,7 @@ export default function App() {
         ) : (
           /* Habits Management & 66-Day Habits View */
           <HabitsListView
+            appearance={appearance}
             habits={habits}
             language={language}
             onToggleDay={handleToggleDay}

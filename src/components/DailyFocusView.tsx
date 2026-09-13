@@ -25,6 +25,7 @@ import { HabitCard } from './HabitCard';
 import { TaskCard } from './TaskCard';
 
 interface DailyFocusViewProps {
+  appearance?: any;
   habits: Habit[];
   tasks: Task[];
   language: Language;
@@ -61,6 +62,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
   onDeleteTask,
   onOpenPomodoroForHabit,
   onOpenPomodoroForTask,
+  appearance,
 }) => {
   const t = translations[language];
   const todayStr = getTodayString();
@@ -149,7 +151,7 @@ export const DailyFocusView: React.FC<DailyFocusViewProps> = ({
   return (
     <div className="flex flex-col gap-6">
       {/* Daily Progress Focus Header Box */}
-      <div className="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-5 sm:p-7 text-slate-100 flex flex-col gap-5">
+      <div className={`relative overflow-hidden rounded-3xl shadow-2xl p-5 sm:p-7 text-slate-100 flex flex-col gap-5 ${appearance?.sectionCardClass || "bg-slate-900 border border-slate-800"} ${appearance?.maxHeightClass || "h-[500px]"}`}>
         {/* Subtle Ambient Glow Effects */}
         <div className="absolute -top-24 -left-24 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
