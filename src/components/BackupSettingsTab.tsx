@@ -100,6 +100,7 @@ import {
   ParsedNovelZipResult,
 } from '../utils/novelBackupHelper';
 import { getPomodoroSessions } from '../utils/pomodoroStorage';
+import { safeStorage } from '../utils/safeStorage';
 
 interface BackupSettingsTabProps {
   language: Language;
@@ -147,6 +148,28 @@ export const BackupSettingsTab: React.FC<BackupSettingsTabProps> = ({
   const [selectedOptions, setSelectedOptions] = useState<SelectiveBackupOptions>(
     DEFAULT_SELECTIVE_BACKUP_OPTIONS
   );
+
+  // Persist selective backup options to localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('lally_backup_selective_options');
+      if (saved) {
+        const parsed: SelectiveBackupOptions = JSON.parse(saved);
+        setSelectedOptions(parsed);
+      }
+    } catch {
+      // Use defaults on parse error
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('lally_backup_selective_options', JSON.stringify(selectedOptions));
+    } catch {
+      // Silently ignore storage errors
+    }
+  }, [selectedOptions]);
+
   const [activePreset, setActivePreset] = useState<'recommended' | 'habits_only' | 'productivity' | 'full' | 'custom'>(
     'recommended'
   );
@@ -538,7 +561,10 @@ export const BackupSettingsTab: React.FC<BackupSettingsTabProps> = ({
         estimatedInfo.payload
       );
       if (snap) {
-        snap.tag = snapshotTagInput;
+        // Persist tag to storage after snapshot creation
+        const existing = getBackupSnapshots();
+        const tagged = existing.map((s) => s.id === snap.id ? { ...s, tag: snapshotTagInput } : s);
+        safeStorage.setItem('lally_backup_snapshots', JSON.stringify(tagged));
       }
       setSnapshots(getBackupSnapshots());
       setSnapshotLabelInput('');
@@ -1087,7 +1113,12 @@ export const BackupSettingsTab: React.FC<BackupSettingsTabProps> = ({
       );
       setParsedNovelZipResult(null);
     } catch (err: any) {
-      alert(err?.message || 'Error restoring novels');
+      setStatusMessage({
+        type: 'error',
+        text: err?.message || (language === 'fa'
+          ? 'خطا در بازگردانی رمان‌ها.'
+          : 'Error restoring novels.'),
+      });
     } finally {
       setIsRestoringNovelZip(false);
     }

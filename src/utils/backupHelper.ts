@@ -244,11 +244,9 @@ export function createSelectiveBackupPayload(
             const entryTime = new Date(dateStr).getTime();
             if (!isNaN(entryTime) && entryTime >= cutoffTime) {
               filteredHistory[dateStr] = isDone;
-            } else if (isNaN(entryTime)) {
-              filteredHistory[dateStr] = isDone;
             }
           } catch {
-            filteredHistory[dateStr] = isDone;
+            // Silently skip malformed date entries — don't include them in filtered history
           }
         });
         return { ...h, history: filteredHistory };
@@ -814,6 +812,7 @@ export function parseAndValidateBackup(jsonStringOrData: string | FullBackupData
     } else {
       return {
         isValid: false,
+        valid: false,
         habits: [],
         backupType: 'legacy',
         isLegacyFormat: false,
@@ -834,6 +833,7 @@ export function parseAndValidateBackup(jsonStringOrData: string | FullBackupData
     if (habits.length === 0 && (!tasks || tasks.length === 0)) {
       return {
         isValid: false,
+        valid: false,
         habits: [],
         backupType: 'legacy',
         isLegacyFormat,
@@ -848,6 +848,7 @@ export function parseAndValidateBackup(jsonStringOrData: string | FullBackupData
           containsShopFiles: false,
         },
         error: 'Backup file contains zero valid habits or tasks',
+        errorMessage: 'Backup file contains zero valid habits or tasks',
       };
     }
 
@@ -1989,15 +1990,17 @@ export function compareBackupWithCurrent(
   }
 ): BackupDiffComparison {
   const incomingHabits = backup.habits || [];
+  const safeHabits: Habit[] = current.habits ?? [];
+  const safeTasks: Task[] = current.tasks ?? [];
   const currentHabitsMap = new Map<string, Habit>();
-  current.habits.forEach((h) => currentHabitsMap.set(h.id, h));
+  safeHabits.forEach((h) => currentHabitsMap.set(h.id, h));
 
   let newHabitsCount = 0;
   let existingHabitsCount = 0;
   let newCheckInsCount = 0;
 
   incomingHabits.forEach((inH) => {
-    const existing = currentHabitsMap.get(inH.id) || current.habits.find((h) => h.name === inH.name);
+    const existing = currentHabitsMap.get(inH.id) || safeHabits.find((h) => h.name === inH.name);
     if (!existing) {
       newHabitsCount++;
     } else {
@@ -2012,7 +2015,7 @@ export function compareBackupWithCurrent(
     }
   });
 
-  const currentTaskIds = new Set(current.tasks.map((t) => t.id));
+  const currentTaskIds = new Set(safeTasks.map((t) => t.id));
   const incomingTasks = backup.tasks || [];
   const newTasksCount = incomingTasks.filter((t) => !currentTaskIds.has(t.id)).length;
 

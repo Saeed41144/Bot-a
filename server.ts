@@ -3942,6 +3942,30 @@ function getComprehensiveUserStats() {
     streak: t.streak || 0,
   }));
 
+  // ── Context-Aware: Real-Time Temporal & Behavioral Context ──
+  const now = new Date();
+  const hour = now.getHours();
+  const dayOfWeek = now.getDay(); // 0=Sun .. 6=Sat
+  const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
+  const timeOfDay: "morning" | "late_morning" | "afternoon" | "evening" | "night" =
+    hour >= 5 && hour < 9 ? "morning" :
+    hour >= 9 && hour < 12 ? "late_morning" :
+    hour >= 12 && hour < 18 ? "afternoon" :
+    hour >= 18 && hour < 22 ? "evening" : "night";
+
+  const daysOfWeekFa = ["یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه", "شنبه"];
+  const daysOfWeekEn = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const dayName = currentServerState.language === "fa" ? daysOfWeekFa[dayOfWeek] : currentServerState.language === "ar" ? daysOfWeekFa[dayOfWeek] : daysOfWeekEn[dayOfWeek];
+  const timeLabel = currentServerState.language === "fa" ? { morning: "صبح", late_morning: "صبح دیروقت", afternoon: "بعدازظهر", evening: "عصر", night: "شب" }[timeOfDay] || "" : timeOfDay;
+
+  // Golden Window Detection (based on Lally circadian productivity patterns)
+  const goldenWindow = (hour >= 7 && hour < 11) ? "🟢 بله — پنجره طلایی بهره‌وری" :
+    (hour >= 18 && hour < 21) ? "🟡 نزدیک پنجره طلایی" : "🔴 خارج از پنجره طلایی";
+
+  // Week position in month (approximate)
+  const weekOfMonth = Math.ceil((now.getDate()) / 7);
+  // ── End Context-Aware ──
+
   const totalHabits = habits.length;
   const doneHabits = habits.filter((h: any) => h.isDoneToday).length;
   const pendingHabits = habits.filter((h: any) => !h.isDoneToday);
@@ -3958,27 +3982,53 @@ function getComprehensiveUserStats() {
   const longestStreak = Math.max(0, ...habits.map((h: any) => h.longestStreak || 0));
   const totalDaysCompleted = habits.reduce((acc: number, h: any) => acc + (h.totalCompletedDays || 0), 0);
 
+  // Average weekly completion rate for coach intelligence
+  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const todayStr = now.toISOString().split("T")[0];
+  let weeklyCompletionDays = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const dayKey = d.toISOString().split("T")[0];
+    const doneOnDay = habits.filter((h: any) => {
+      if (!h.completedDates || !Array.isArray(h.completedDates)) return false;
+      return h.completedDates.includes(dayKey);
+    }).length;
+    if (totalHabits > 0 && doneOnDay > 0) weeklyCompletionDays++;
+  }
+  const weeklyTrend = weeklyCompletionDays >= 5 ? "📈 عالی" : weeklyCompletionDays >= 3 ? "📊 متوسط" : "📉 نیاز به تلاش";
+
   const walletCoins = currentServerState.wallet?.coins || 0;
   const brainLevel = (currentServerState.wallet as any)?.level || Math.floor((currentServerState.wallet?.totalCoinsEarned || 0) / 100) + 1;
 
+  // Cognitive profile data for enriched context
+  const cogProfile = currentServerState.userCognitiveProfile || {};
+  const cogStrengths = Array.isArray(cogProfile.cognitiveStrengths) ? cogProfile.cognitiveStrengths.slice(0, 3) : [];
+  const vulnerabilityTriggers = Array.isArray(cogProfile.vulnerabilityTriggers) ? cogProfile.vulnerabilityTriggers.slice(0, 3) : [];
+  const personalAdvice = cogProfile.personalAdvice;
+
+  // Persona feedback stats for adaptive switching
+  const feedbackHistory = (currentServerState as any).coachFeedbackHistory || [];
+  const recentFeedback = feedbackHistory.slice(-10);
+  const goodFeedback = recentFeedback.filter((f: any) => f.rating === "good").length;
+  const badFeedback = recentFeedback.filter((f: any) => f.rating === "bad").length;
+  const feedbackScore = recentFeedback.length > 0 ? Math.round((goodFeedback / recentFeedback.length) * 100) : 50;
+
   return {
-    habits,
-    tasks,
-    totalHabits,
-    doneHabits,
-    pendingHabits,
-    habitCompletionRate,
-    totalTasks,
-    doneTasks,
-    pendingTasks,
-    taskCompletionRate,
-    automaticCount,
-    semiAutomaticCount,
-    formingCount,
-    longestStreak,
-    totalDaysCompleted,
-    walletCoins,
-    brainLevel,
+    // ── Core Stats ──
+    habits, tasks,
+    totalHabits, doneHabits, pendingHabits, habitCompletionRate,
+    totalTasks, doneTasks, pendingTasks, taskCompletionRate,
+    automaticCount, semiAutomaticCount, formingCount,
+    longestStreak, totalDaysCompleted, walletCoins, brainLevel,
+    // ── Context-Aware (NEW) ──
+    timeOfDay, dayOfWeek, isWeekend, dayName, timeLabel, goldenWindow, weekOfMonth,
+    currentHour: hour,
+    weeklyCompletionDays, weeklyTrend,
+    // ── Cognitive Profile (NEW) ──
+    cogStrengths, vulnerabilityTriggers, personalAdvice,
+    // ── Feedback Stats (NEW) ──
+    feedbackScore, goodFeedback, badFeedback, totalFeedbackGiven: feedbackHistory.length,
   };
 }
 

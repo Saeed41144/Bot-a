@@ -3169,7 +3169,7 @@ export default function App() {
         {/* Footer */}
         <footer className="mt-8 pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-3 text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-widest">
           <div className="flex items-center gap-2">
-            <span>Scientific Habit Tracker &copy; 2025</span>
+            <span>Scientific Habit Tracker v1.2 &copy; 2025</span>
             <span>•</span>
             <span>{t.scientificModelBadge}</span>
           </div>
