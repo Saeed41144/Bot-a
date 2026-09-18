@@ -108,7 +108,7 @@ function getDeletedHabitIds(): string[] {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;
     }
-  } catch {}
+  } catch (e) { console.warn("Failed to load deletedHabitIds from localStorage:", e); }
   return [];
 }
 
@@ -119,7 +119,7 @@ function getDeletedTaskIds(): string[] {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;
     }
-  } catch {}
+  } catch (e) { console.warn("Failed to load deletedTaskIds from localStorage:", e); }
   return [];
 }
 
@@ -230,7 +230,7 @@ export default function App() {
     setAdvancedSettings(newSettings);
     try {
       safeStorage.setItem(ADVANCED_KEY, JSON.stringify(newSettings));
-    } catch {}
+    } catch (e) { console.warn("Failed to save advancedSettings to localStorage:", e); }
   };
 
   // Reward Store, Web Novels & Movie Cinema state
@@ -367,14 +367,14 @@ export default function App() {
   useEffect(() => {
     try {
       safeStorage.setItem(DELETED_HABIT_IDS_KEY, JSON.stringify(deletedHabitIds));
-    } catch {}
+    } catch (e) { console.warn("Failed to save deletedHabitIds to localStorage:", e); }
   }, [deletedHabitIds]);
 
   // Save deleted task IDs to localStorage
   useEffect(() => {
     try {
       safeStorage.setItem(DELETED_TASK_IDS_KEY, JSON.stringify(deletedTaskIds));
-    } catch {}
+    } catch (e) { console.warn("Failed to save deletedTaskIds to localStorage:", e); }
   }, [deletedTaskIds]);
 
   // Apply dark mode & language direction to document
@@ -450,7 +450,7 @@ export default function App() {
       const nextHabits = updater(prev);
       try {
         safeStorage.setItem(STORAGE_KEY, JSON.stringify(nextHabits));
-      } catch {}
+      } catch (e) { console.warn("Failed to save habits to localStorage:", e); }
       return nextHabits;
     });
   };
@@ -463,7 +463,7 @@ export default function App() {
       const nextTasks = updater(prev);
       try {
         safeStorage.setItem(TASKS_KEY, JSON.stringify(nextTasks));
-      } catch {}
+      } catch (e) { console.warn("Failed to save tasks to localStorage:", e); }
       return nextTasks;
     });
   };
@@ -476,7 +476,7 @@ export default function App() {
       const nextWallet = updater(prev);
       try {
         saveRewardWallet(nextWallet);
-      } catch {}
+      } catch (e) { console.warn("Failed to save wallet to localStorage:", e); }
       return nextWallet;
     });
   };
@@ -504,7 +504,7 @@ export default function App() {
 
       try {
         safeStorage.setItem(TELEGRAM_KEY, JSON.stringify(finalConfig));
-      } catch {}
+      } catch (e) { console.warn("Failed to save telegramConfig to localStorage:", e); }
 
       // Explicit direct sync to server immediately to guarantee disk persistence
       fetch('/api/telegram/save-config', {
@@ -639,7 +639,7 @@ export default function App() {
           const merged = Array.from(habitMap.values());
           try {
             safeStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-          } catch {}
+          } catch (e) { console.warn("Failed to save merged habits to localStorage:", e); }
           return merged;
         });
 
@@ -674,7 +674,7 @@ export default function App() {
           const merged = Array.from(taskMap.values());
           try {
             safeStorage.setItem(TASKS_KEY, JSON.stringify(merged));
-          } catch {}
+          } catch (e) { console.warn("Failed to save merged tasks to localStorage:", e); }
           return merged;
         });
 
@@ -736,7 +736,7 @@ export default function App() {
             };
             try {
               safeStorage.setItem(TELEGRAM_KEY, JSON.stringify(mergedConfig));
-            } catch {}
+            } catch (e) { console.warn("Failed to save merged telegramConfig to localStorage:", e); }
             return mergedConfig;
           });
         }
@@ -808,7 +808,7 @@ export default function App() {
           const merged = Array.from(habitMap.values());
           try {
             safeStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-          } catch {}
+          } catch (e) { console.warn("Failed to save merged habits (habits effect) to localStorage:", e); }
           return merged;
         });
 
@@ -866,7 +866,7 @@ export default function App() {
           const merged = Array.from(taskMap.values());
           try {
             safeStorage.setItem(TASKS_KEY, JSON.stringify(merged));
-          } catch {}
+          } catch (e) { console.warn("Failed to save merged tasks (tasks effect) to localStorage:", e); }
           return merged;
         });
 
@@ -934,7 +934,7 @@ export default function App() {
                 };
                 try {
                   safeStorage.setItem(TELEGRAM_KEY, JSON.stringify(updatedConfig));
-                } catch {}
+                } catch (e) { console.warn("Failed to save updated telegramConfig to localStorage:", e); }
                 return updatedConfig;
               }
               return prev;
@@ -995,7 +995,7 @@ export default function App() {
       window.addEventListener('focus', onFocus);
       document.addEventListener('visibilitychange', onVisibilityChange);
       window.addEventListener('customNovelsUpdated', onCustomNovelsUpdated);
-    } catch {}
+    } catch (e) { console.warn("Failed to add global event listeners:", e); }
 
     return () => {
       clearInterval(interval);
@@ -1003,7 +1003,7 @@ export default function App() {
         window.removeEventListener('focus', onFocus);
         document.removeEventListener('visibilitychange', onVisibilityChange);
         window.removeEventListener('customNovelsUpdated', onCustomNovelsUpdated);
-      } catch {}
+      } catch (e) { console.warn("Failed to remove global event listeners:", e); }
     };
   }, []);
 
@@ -2019,7 +2019,7 @@ export default function App() {
     // 3. Cancel and remove any active background translation job for this novel
     try {
       backgroundNovelTranslator.cancelJob(novelId);
-    } catch {}
+    } catch (e) { console.warn("Failed to cancel novel translation job:", e); }
 
     // 4. Update timestamps to avoid sync race conditions
     hasHydratedFromServer.current = true;
@@ -2840,7 +2840,7 @@ export default function App() {
     try {
       safeStorage.setItem(DELETED_HABIT_IDS_KEY, JSON.stringify(cleanDeletedHabitIds));
       safeStorage.setItem(DELETED_TASK_IDS_KEY, JSON.stringify(cleanDeletedTaskIds));
-    } catch {}
+    } catch (e) { console.warn("Failed to save deleted IDs to localStorage on app reset:", e); }
 
     setIsResetConfirmOpen(false);
 
@@ -3169,7 +3169,7 @@ export default function App() {
         {/* Footer */}
         <footer className="mt-8 pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-3 text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-widest">
           <div className="flex items-center gap-2">
-            <span>Scientific Habit Tracker v1.2 &copy; 2025</span>
+            <span>Scientific Habit Tracker v1.2.0 &copy; 2025</span>
             <span>•</span>
             <span>{t.scientificModelBadge}</span>
           </div>

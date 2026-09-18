@@ -3662,7 +3662,9 @@ interface DialogueTurn {
   timestamp: number;
 }
 
+// Dialogue history kept in memory, synced to disk via debounce
 const chatConversations: Record<string, DialogueTurn[]> = {};
+let _chatSaveTimeout: NodeJS.Timeout | null = null;
 
 function initDialogueMemoryFromDisk() {
   try {
@@ -3688,7 +3690,9 @@ function addDialogueTurn(chatId: string | number, role: 'user' | 'assistant', te
     (currentServerState as any).chatHistories = {};
   }
   (currentServerState as any).chatHistories[key] = chatConversations[key];
-  saveServerStateToDisk();
+  // Debounce disk writes — at most once every 2 seconds regardless of message frequency
+  if (_chatSaveTimeout) clearTimeout(_chatSaveTimeout);
+  _chatSaveTimeout = setTimeout(() => { _chatSaveTimeout = null; saveServerStateToDisk(); }, 2000);
 }
 
 function getDialogueHistory(chatId: string | number): DialogueTurn[] {
